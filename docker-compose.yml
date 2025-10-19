@@ -1,0 +1,69 @@
+services:
+  # PostGIS Database Service
+  postgis:
+    image: postgis/postgis:15-3.3-alpine
+    container_name: cmu_apsco_postgis
+    environment:
+      POSTGRES_DB: cmu_apsco_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgis_data:/var/lib/postgresql/data
+      - ./init-scripts:/docker-entrypoint-initdb.d
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # React Application Service (Development mode)
+  react-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: cmu_apsco_react_dev
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./src:/app/src
+      - ./public:/app/public
+      - ./index.html:/app/index.html
+      - ./vite.config.js:/app/vite.config.js
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+      - VITE_API_URL=http://localhost:5000
+      - VITE_DB_HOST=postgis
+    depends_on:
+      postgis:
+        condition: service_healthy
+    restart: unless-stopped
+
+  # React Application Service (Production mode)
+  react-prod:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: cmu_apsco_react_prod
+    ports:
+      - "80:80"
+    environment:
+      - VITE_API_URL=http://localhost:5000
+      - VITE_DB_HOST=postgis
+    depends_on:
+      postgis:
+        condition: service_healthy
+    restart: unless-stopped
+    profiles:
+      - production
+
+volumes:
+  postgis_data:
+    driver: local
+
+networks:
+  default:
+    name: cmu_apsco_network
