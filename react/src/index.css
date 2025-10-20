@@ -348,6 +348,35 @@ code {
   color: #e5e7eb;
 }
 
+/* Mapbox Draw Controls */
+.mapboxgl-ctrl-group button,
+.maplibregl-ctrl-group button {
+  background-color: white;
+  border: none;
+}
+
+.mapboxgl-ctrl-group button:hover,
+.maplibregl-ctrl-group button:hover {
+  background-color: #f0f0f0;
+}
+
+[data-pc-theme="dark"] .mapboxgl-ctrl-group button,
+[data-pc-theme="dark"] .maplibregl-ctrl-group button {
+  background-color: #1e2128;
+  color: #e5e7eb;
+}
+
+[data-pc-theme="dark"] .mapboxgl-ctrl-group button:hover,
+[data-pc-theme="dark"] .maplibregl-ctrl-group button:hover {
+  background-color: #2d3139;
+}
+
+[data-pc-theme="dark"] .mapboxgl-ctrl-group,
+[data-pc-theme="dark"] .maplibregl-ctrl-group {
+  background: #1e2128;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
 /* Smooth theme transitions */
 body,
 .card,

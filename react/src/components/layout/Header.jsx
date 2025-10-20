@@ -1,6 +1,9 @@
 import React from 'react';
+import { useLanguage } from '../../contexts/LanguageContext';
 
 const Header = () => {
+    const { language, toggleLanguage, t } = useLanguage();
+
     const handleSidebarToggle = (e) => {
         e.preventDefault();
         const sidebar = document.querySelector('.pc-sidebar');
@@ -51,8 +54,8 @@ const Header = () => {
                             <div className="dropdown-menu pc-h-dropdown drp-search">
                                 <form className="px-3">
                                     <div className="mb-0 d-flex align-items-center">
-                                        <input type="search" className="form-control border-0 shadow-none" placeholder="Search..." />
-                                        <button className="btn btn-light-secondary btn-search">Search</button>
+                                        <input type="search" className="form-control border-0 shadow-none" placeholder={t('search')} />
+                                        <button className="btn btn-light-secondary btn-search">{t('search').replace('...', '')}</button>
                                     </div>
                                 </form>
                             </div>
@@ -60,7 +63,7 @@ const Header = () => {
                         <li className="pc-h-item d-none d-md-inline-flex">
                             <form className="form-search">
                                 <i className="ph-duotone ph-magnifying-glass icon-search"></i>
-                                <input type="search" className="form-control" placeholder="Search..." />
+                                <input type="search" className="form-control" placeholder={t('search')} />
                                 <button className="btn btn-search" style={{ padding: 0 }}><kbd>ctrl+k</kbd></button>
                             </form>
                         </li>
@@ -69,6 +72,24 @@ const Header = () => {
                 {/* [Mobile Media Block end] */}
                 <div className="ms-auto">
                     <ul className="list-unstyled">
+                        {/* Language Switcher */}
+                        <li className="pc-h-item">
+                            <a
+                                href="#!"
+                                className="pc-head-link me-0"
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    toggleLanguage();
+                                }}
+                                title={language === 'en' ? 'Switch to Thai' : 'เปลี่ยนเป็นภาษาอังกฤษ'}
+                            >
+                                <i className="ph-duotone ph-translate"></i>
+                                <span className="ms-1 d-none d-md-inline-block fw-bold">
+                                    {language === 'en' ? 'TH' : 'EN'}
+                                </span>
+                            </a>
+                        </li>
+
                         <li className="dropdown pc-h-item">
                             <a className="pc-head-link dropdown-toggle arrow-none me-0" data-bs-toggle="dropdown" href="#" role="button"
                                 aria-haspopup="false" aria-expanded="false">
@@ -77,15 +98,15 @@ const Header = () => {
                             <div className="dropdown-menu dropdown-menu-end pc-h-dropdown">
                                 <a href="#!" className="dropdown-item" onClick={() => window.layout_change('dark')}>
                                     <i className="ph-duotone ph-moon"></i>
-                                    <span>Dark</span>
+                                    <span>{t('dark')}</span>
                                 </a>
                                 <a href="#!" className="dropdown-item" onClick={() => window.layout_change('light')}>
                                     <i className="ph-duotone ph-sun-dim"></i>
-                                    <span>Light</span>
+                                    <span>{t('light')}</span>
                                 </a>
                                 <a href="#!" className="dropdown-item" onClick={() => window.layout_change_default()}>
                                     <i className="ph-duotone ph-cpu"></i>
-                                    <span>Default</span>
+                                    <span>{t('default')}</span>
                                 </a>
                             </div>
                         </li>
@@ -99,15 +120,15 @@ const Header = () => {
                             <div className="dropdown-menu dropdown-menu-end pc-h-dropdown">
                                 <a href="#!" className="dropdown-item">
                                     <i className="ph-duotone ph-info"></i>
-                                    <span>System Status Update</span>
+                                    <span>{t('systemStatusUpdate')}</span>
                                 </a>
                                 <a href="#!" className="dropdown-item">
                                     <i className="ph-duotone ph-database"></i>
-                                    <span>Database Connection</span>
+                                    <span>{t('databaseConnection')}</span>
                                 </a>
                                 <a href="#!" className="dropdown-item">
                                     <i className="ph-duotone ph-chart-line"></i>
-                                    <span>New Data Available</span>
+                                    <span>{t('newDataAvailable')}</span>
                                 </a>
                             </div>
                         </li>
@@ -120,23 +141,23 @@ const Header = () => {
                             <div className="dropdown-menu dropdown-menu-end pc-h-dropdown">
                                 <a href="#!" className="dropdown-item">
                                     <i className="ph-duotone ph-user"></i>
-                                    <span>My Account</span>
+                                    <span>{t('myAccount')}</span>
                                 </a>
                                 <a href="#!" className="dropdown-item">
                                     <i className="ph-duotone ph-gear"></i>
-                                    <span>Settings</span>
+                                    <span>{t('settings')}</span>
                                 </a>
                                 <a href="#!" className="dropdown-item">
                                     <i className="ph-duotone ph-lifebuoy"></i>
-                                    <span>Support</span>
+                                    <span>{t('support')}</span>
                                 </a>
                                 <a href="#!" className="dropdown-item">
                                     <i className="ph-duotone ph-lock-key"></i>
-                                    <span>Lock Screen</span>
+                                    <span>{t('lockScreen')}</span>
                                 </a>
                                 <a href="#!" className="dropdown-item">
                                     <i className="ph-duotone ph-power"></i>
-                                    <span>Logout</span>
+                                    <span>{t('logout')}</span>
                                 </a>
                             </div>
                         </li>

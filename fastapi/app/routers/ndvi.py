@@ -84,6 +84,7 @@ EE_INITIALIZED = initialize_ee()
 
 # Study area options
 STUDY_AREAS = {
+    # Upper Northern Thailand
     "Chiang Mai": {
         "name": "Chiang Mai",
         "bounds": {
@@ -93,15 +94,70 @@ STUDY_AREAS = {
         "center": [98.95, 18.8],
         "zoom": 8
     },
-    "Khon Kaen": {
-        "name": "Khon Kaen",
+    "Chiang Rai": {
+        "name": "Chiang Rai",
         "bounds": {
             "type": "Polygon",
-            "coordinates": [[[101.5, 15.5], [103.5, 15.5], [103.5, 17.0], [101.5, 17.0], [101.5, 15.5]]]
+            "coordinates": [[[99.3, 19.3], [100.5, 19.3], [100.5, 20.5], [99.3, 20.5], [99.3, 19.3]]]
         },
-        "center": [102.5, 16.25],
+        "center": [99.9, 19.9],
         "zoom": 8
     },
+    "Lamphun": {
+        "name": "Lamphun",
+        "bounds": {
+            "type": "Polygon",
+            "coordinates": [[[98.8, 17.9], [99.3, 17.9], [99.3, 18.6], [98.8, 18.6], [98.8, 17.9]]]
+        },
+        "center": [99.05, 18.25],
+        "zoom": 9
+    },
+    "Lampang": {
+        "name": "Lampang",
+        "bounds": {
+            "type": "Polygon",
+            "coordinates": [[[99.2, 17.8], [100.0, 17.8], [100.0, 19.0], [99.2, 19.0], [99.2, 17.8]]]
+        },
+        "center": [99.6, 18.4],
+        "zoom": 8
+    },
+    "Mae Hong Son": {
+        "name": "Mae Hong Son",
+        "bounds": {
+            "type": "Polygon",
+            "coordinates": [[[97.5, 17.8], [98.6, 17.8], [98.6, 19.6], [97.5, 19.6], [97.5, 17.8]]]
+        },
+        "center": [98.05, 18.7],
+        "zoom": 8
+    },
+    "Nan": {
+        "name": "Nan",
+        "bounds": {
+            "type": "Polygon",
+            "coordinates": [[[100.4, 18.0], [101.3, 18.0], [101.3, 19.3], [100.4, 19.3], [100.4, 18.0]]]
+        },
+        "center": [100.85, 18.65],
+        "zoom": 8
+    },
+    "Phayao": {
+        "name": "Phayao",
+        "bounds": {
+            "type": "Polygon",
+            "coordinates": [[[99.6, 18.8], [100.3, 18.8], [100.3, 19.7], [99.6, 19.7], [99.6, 18.8]]]
+        },
+        "center": [99.95, 19.25],
+        "zoom": 9
+    },
+    "Phrae": {
+        "name": "Phrae",
+        "bounds": {
+            "type": "Polygon",
+            "coordinates": [[[99.8, 17.8], [100.9, 17.8], [100.9, 18.8], [99.8, 18.8], [99.8, 17.8]]]
+        },
+        "center": [100.35, 18.3],
+        "zoom": 8
+    },
+    # Lower Northern Thailand
     "Phitsanulok": {
         "name": "Phitsanulok",
         "bounds": {
@@ -109,6 +165,70 @@ STUDY_AREAS = {
             "coordinates": [[[99.8, 16.0], [101.3, 16.0], [101.3, 17.5], [99.8, 17.5], [99.8, 16.0]]]
         },
         "center": [100.55, 16.75],
+        "zoom": 8
+    },
+    "Sukhothai": {
+        "name": "Sukhothai",
+        "bounds": {
+            "type": "Polygon",
+            "coordinates": [[[99.3, 16.8], [100.0, 16.8], [100.0, 17.7], [99.3, 17.7], [99.3, 16.8]]]
+        },
+        "center": [99.65, 17.25],
+        "zoom": 8
+    },
+    "Uttaradit": {
+        "name": "Uttaradit",
+        "bounds": {
+            "type": "Polygon",
+            "coordinates": [[[99.9, 17.3], [100.8, 17.3], [100.8, 18.0], [99.9, 18.0], [99.9, 17.3]]]
+        },
+        "center": [100.35, 17.65],
+        "zoom": 8
+    },
+    "Tak": {
+        "name": "Tak",
+        "bounds": {
+            "type": "Polygon",
+            "coordinates": [[[98.3, 15.9], [99.6, 15.9], [99.6, 17.8], [98.3, 17.8], [98.3, 15.9]]]
+        },
+        "center": [98.95, 16.85],
+        "zoom": 8
+    },
+    "Kamphaeng Phet": {
+        "name": "Kamphaeng Phet",
+        "bounds": {
+            "type": "Polygon",
+            "coordinates": [[[99.0, 15.9], [100.1, 15.9], [100.1, 16.9], [99.0, 16.9], [99.0, 15.9]]]
+        },
+        "center": [99.55, 16.4],
+        "zoom": 8
+    },
+    "Phichit": {
+        "name": "Phichit",
+        "bounds": {
+            "type": "Polygon",
+            "coordinates": [[[99.7, 15.8], [100.6, 15.8], [100.6, 16.6], [99.7, 16.6], [99.7, 15.8]]]
+        },
+        "center": [100.15, 16.2],
+        "zoom": 8
+    },
+    "Phetchabun": {
+        "name": "Phetchabun",
+        "bounds": {
+            "type": "Polygon",
+            "coordinates": [[[100.5, 15.8], [101.5, 15.8], [101.5, 17.2], [100.5, 17.2], [100.5, 15.8]]]
+        },
+        "center": [101.0, 16.5],
+        "zoom": 8
+    },
+    # For reference: Khon Kaen (Northeast, not Northern)
+    "Khon Kaen": {
+        "name": "Khon Kaen",
+        "bounds": {
+            "type": "Polygon",
+            "coordinates": [[[101.5, 15.5], [103.5, 15.5], [103.5, 17.0], [101.5, 17.0], [101.5, 15.5]]]
+        },
+        "center": [102.5, 16.25],
         "zoom": 8
     }
 }
@@ -168,7 +288,7 @@ def calculate_precipitation_anomaly(start_date: str, end_date: str, study_area: 
     Args:
         start_date: Start date in YYYY-MM-DD format
         end_date: End date in YYYY-MM-DD format
-        study_area: Name of the study area
+        study_area: Name of the study area (e.g., 'Chiang Mai', 'Khon Kaen', 'Phitsanulok')
 
     Returns:
         Precipitation anomaly image and region of interest
@@ -316,6 +436,86 @@ async def get_study_areas():
             for key, value in STUDY_AREAS.items()
         ]
     }
+
+
+@router.get("/pixel-value")
+async def get_pixel_value(
+    lng: float = Query(..., description="Longitude"),
+    lat: float = Query(..., description="Latitude"),
+    start_date: Optional[str] = Query(None, description="Start date (YYYY-MM-DD)"),
+    end_date: Optional[str] = Query(None, description="End date (YYYY-MM-DD)"),
+    study_area: str = Query("Chiang Mai", description="Study area name"),
+    index_type: str = Query("NDVI", description="Index type: NDVI, SPI, or NDMI")
+):
+    """
+    Get index value at a specific point
+
+    Returns the index value (NDVI, SPI, or NDMI) at the specified coordinates
+    """
+    if not EE_INITIALIZED:
+        raise HTTPException(
+            status_code=503, detail="Earth Engine not initialized. Please configure authentication.")
+
+    try:
+        # Default to last 30 days if no dates provided
+        if not end_date:
+            end_date = datetime.now().strftime('%Y-%m-%d')
+        if not start_date:
+            start_date = (datetime.now() - timedelta(days=30)).strftime('%Y-%m-%d')
+
+        # Create point geometry
+        point = ee.Geometry.Point([lng, lat])
+
+        # Get the appropriate image based on index type
+        if index_type == 'SPI':
+            image, _ = calculate_precipitation_anomaly(start_date, end_date, study_area)
+            band_name = 'SPI'
+        elif index_type == 'NDMI':
+            image, _ = get_modis_ndmi(start_date, end_date, study_area)
+            band_name = 'NDMI'
+        else:  # NDVI
+            image, _ = get_modis_ndvi(start_date, end_date, study_area)
+            band_name = 'NDVI'
+
+        # Sample the image at the point
+        value = image.reduceRegion(
+            reducer=ee.Reducer.first(),
+            geometry=point,
+            scale=250  # MODIS resolution
+        ).getInfo()
+
+        index_value = value.get(band_name, None)
+
+        if index_value is None:
+            return {
+                "location": {"lng": lng, "lat": lat},
+                "index_type": index_type,
+                "value": None,
+                "message": "No data available at this location"
+            }
+
+        # Get interpretation based on index type
+        if index_type == 'SPI':
+            interpretation = interpret_spi(index_value)
+        elif index_type == 'NDMI':
+            interpretation = interpret_ndmi(index_value)
+        else:
+            interpretation = interpret_ndvi(index_value)
+
+        return {
+            "location": {"lng": lng, "lat": lat},
+            "index_type": index_type,
+            "value": round(index_value, 4),
+            "interpretation": interpretation,
+            "period": {
+                "start_date": start_date,
+                "end_date": end_date
+            }
+        }
+
+    except Exception as e:
+        raise HTTPException(
+            status_code=500, detail=f"Error getting pixel value: {str(e)}")
 
 
 @router.get("/tile/{z}/{x}/{y}")

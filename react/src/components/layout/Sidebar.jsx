@@ -1,8 +1,10 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { useLanguage } from '../../contexts/LanguageContext';
 
 const Sidebar = () => {
     const location = useLocation();
+    const { t } = useLanguage();
 
     const isActive = (path) => {
         return location.pathname === path ? 'active' : '';
@@ -25,15 +27,7 @@ const Sidebar = () => {
                                 <span className="pc-micon">
                                     <i className="ph-duotone ph-house"></i>
                                 </span>
-                                <span className="pc-mtext">Dashboard</span>
-                            </Link>
-                        </li>
-                        <li className={`pc-item ${isActive('/map')}`}>
-                            <Link to="/map" className="pc-link">
-                                <span className="pc-micon">
-                                    <i className="ph-duotone ph-map-pin"></i>
-                                </span>
-                                <span className="pc-mtext">Map</span>
+                                <span className="pc-mtext">{t('dashboard')}</span>
                             </Link>
                         </li>
                         <li className={`pc-item ${isActive('/ndvi')}`}>
@@ -41,7 +35,7 @@ const Sidebar = () => {
                                 <span className="pc-micon">
                                     <i className="ph-duotone ph-plant"></i>
                                 </span>
-                                <span className="pc-mtext">Drought Monitoring</span>
+                                <span className="pc-mtext">{t('droughtMonitoring')}</span>
                             </Link>
                         </li>
                         <li className={`pc-item ${isActive('/data')}`}>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { DashboardLayout } from '../layout';
 import MapComponent from './MapComponent';
 import { Layer, Source } from 'react-map-gl/maplibre';
@@ -19,6 +19,9 @@ const NDVIPage = () => {
     const [opacity, setOpacity] = useState(0.7);
     const [basemap, setBasemap] = useState('positron');
     const [selectedIndex, setSelectedIndex] = useState('NDVI'); // 'NDVI', 'SPI', or 'NDMI'
+    const [showIndexLayer, setShowIndexLayer] = useState(true); // Show/hide index layer
+    const [toastMessage, setToastMessage] = useState(null); // Toast notification
+    const mapRef = useRef(null); // Reference to map instance
 
     // Available basemap options
     const basemapOptions = {
@@ -160,6 +163,57 @@ const NDVIPage = () => {
 
     const handleMapLoad = (map) => {
         console.log('Map loaded', map);
+        mapRef.current = map;
+
+        // Set globe projection
+        if (map.setProjection) {
+            map.setProjection({ type: 'globe' });
+        }
+
+        // Add click event for showing index values
+        map.on('click', handleMapClick);
+    };
+
+    const handleMapClick = async (e) => {
+        if (!mapRef.current || !ndviData || !ndviData.tile_url || !showIndexLayer) return;
+
+        const lngLat = e.lngLat;
+
+        try {
+            // Show loading toast
+            showToast('Loading...', 10000);
+
+            // Query the backend for pixel value
+            const response = await fetch(
+                `http://localhost:8000/api/ndvi/pixel-value?` +
+                `lng=${lngLat.lng}&lat=${lngLat.lat}` +
+                `&start_date=${dateRange.startDate}&end_date=${dateRange.endDate}` +
+                `&study_area=${encodeURIComponent(selectedArea)}` +
+                `&index_type=${selectedIndex}`
+            );
+
+            if (response.ok) {
+                const data = await response.json();
+                if (data.value !== null) {
+                    showToast(
+                        `${selectedIndex}: ${data.value}\n${data.interpretation}`,
+                        5000
+                    );
+                } else {
+                    showToast('No data available at this location', 3000);
+                }
+            } else {
+                showToast('Error fetching pixel value', 3000);
+            }
+        } catch (error) {
+            console.error('Error querying map:', error);
+            showToast('Error fetching pixel value', 3000);
+        }
+    };
+
+    const showToast = (message, duration = 3000) => {
+        setToastMessage(message);
+        setTimeout(() => setToastMessage(null), duration);
     };
 
     const handleDateChange = () => {
@@ -191,40 +245,56 @@ const NDVIPage = () => {
             <div className="col-12">
                 <div className="card">
                     <div className="card-body">
-                        {/* Index Selector - moved to top of card body */}
+                        {/* Index Selector with checkbox - moved to top of card body */}
                         <div className="d-flex justify-content-between align-items-center mb-3">
                             <h5 className="mb-0">
                                 <i className="ph-duotone ph-chart-line me-2"></i>
                                 {selectedIndex} Analysis - {selectedArea}
                             </h5>
-                            <div className="btn-group" role="group">
-                                <button
-                                    type="button"
-                                    className={`btn btn-sm ${selectedIndex === 'NDVI' ? 'btn-primary' : 'btn-outline-primary'}`}
-                                    onClick={() => setSelectedIndex('NDVI')}
-                                    title="Normalized Difference Vegetation Index"
-                                >
-                                    <i className="ph-duotone ph-plant me-1"></i>
-                                    NDVI
-                                </button>
-                                <button
-                                    type="button"
-                                    className={`btn btn-sm ${selectedIndex === 'NDMI' ? 'btn-primary' : 'btn-outline-primary'}`}
-                                    onClick={() => setSelectedIndex('NDMI')}
-                                    title="Normalized Difference Moisture Index"
-                                >
-                                    <i className="ph-duotone ph-drop me-1"></i>
-                                    NDMI
-                                </button>
-                                <button
-                                    type="button"
-                                    className={`btn btn-sm ${selectedIndex === 'SPI' ? 'btn-primary' : 'btn-outline-primary'}`}
-                                    onClick={() => setSelectedIndex('SPI')}
-                                    title="Standardized Precipitation Index"
-                                >
-                                    <i className="ph-duotone ph-cloud-rain me-1"></i>
-                                    SPI
-                                </button>
+                            <div className="d-flex align-items-center gap-3">
+                                {/* Show/Hide Layer Checkbox */}
+                                <div className="form-check">
+                                    <input
+                                        className="form-check-input"
+                                        type="checkbox"
+                                        id="showIndexLayer"
+                                        checked={showIndexLayer}
+                                        onChange={(e) => setShowIndexLayer(e.target.checked)}
+                                    />
+                                    <label className="form-check-label" htmlFor="showIndexLayer">
+                                        Show Layer
+                                    </label>
+                                </div>
+                                {/* Index Type Selector */}
+                                <div className="btn-group" role="group">
+                                    <button
+                                        type="button"
+                                        className={`btn btn-sm ${selectedIndex === 'NDVI' ? 'btn-primary' : 'btn-outline-primary'}`}
+                                        onClick={() => setSelectedIndex('NDVI')}
+                                        title="Normalized Difference Vegetation Index"
+                                    >
+                                        <i className="ph-duotone ph-plant me-1"></i>
+                                        NDVI
+                                    </button>
+                                    <button
+                                        type="button"
+                                        className={`btn btn-sm ${selectedIndex === 'NDMI' ? 'btn-primary' : 'btn-outline-primary'}`}
+                                        onClick={() => setSelectedIndex('NDMI')}
+                                        title="Normalized Difference Moisture Index"
+                                    >
+                                        <i className="ph-duotone ph-drop me-1"></i>
+                                        NDMI
+                                    </button>
+                                    <button
+                                        type="button"
+                                        className={`btn btn-sm ${selectedIndex === 'SPI' ? 'btn-primary' : 'btn-outline-primary'}`}
+                                        onClick={() => setSelectedIndex('SPI')}
+                                        title="Standardized Precipitation Index"
+                                    >
+                                        <i className="ph-duotone ph-cloud-rain me-1"></i>
+                                        SPI
+                                    </button>
+                                </div>
                             </div>
                         </div>
                         <div className="row g-3">
@@ -236,7 +306,7 @@ const NDVIPage = () => {
                                     onChange={(e) => setSelectedArea(e.target.value)}
                                 >
                                     {studyAreas.map((area) => (
-                                        <option key={area.id} value={area.id}>
+                                        <option key={area.name} value={area.name}>
                                             {area.name}
                                         </option>
                                     ))}
@@ -376,6 +446,37 @@ const NDVIPage = () => {
                             </div>
                         )}
 
+                        {/* Index Value Info Box */}
+                        {toastMessage && (
+                            <div
+                                className="card"
+                                style={{
+                                    position: 'absolute',
+                                    top: '10px',
+                                    right: '10px',
+                                    zIndex: 1,
+                                    minWidth: '300px',
+                                    maxWidth: '400px'
+                                }}
+                            >
+                                <div className="card-header bg-primary text-white d-flex justify-content-between align-items-center py-2">
+                                    <div>
+                                        <i className="ph-duotone ph-map-pin me-2"></i>
+                                        <strong>Index Value</strong>
+                                    </div>
+                                    <button
+                                        type="button"
+                                        className="btn-close btn-close-white btn-sm"
+                                        onClick={() => setToastMessage(null)}
+                                        style={{ fontSize: '0.7rem' }}
+                                    ></button>
+                                </div>
+                                <div className="card-body py-2" style={{ whiteSpace: 'pre-line', fontSize: '0.9rem' }}>
+                                    {toastMessage}
+                                </div>
+                            </div>
+                        )}
+
                         <MapComponent
                             initialViewState={{
                                 longitude: mapCenter[0],
@@ -388,8 +489,8 @@ const NDVIPage = () => {
                             onMapLoad={handleMapLoad}
                             projection="globe"
                         >
-                            {/* Add NDVI raster layer when data is available */}
-                            {ndviData && ndviData.tile_url && (
+                            {/* Add index raster layer when data is available and layer is visible */}
+                            {showIndexLayer && ndviData && ndviData.tile_url && (
                                 <Source
                                     id="ndvi-source"
                                     type="raster"
@@ -449,11 +550,17 @@ const NDVIPage = () => {
                                     <strong>Interpretation:</strong> {stats.interpretation}
                                 </div>
                             </>
-                        ) : (
+                        ) : loading ? (
                             <div className="text-center py-4">
                                 <div className="spinner-border text-primary" role="status">
                                     <span className="visually-hidden">Loading...</span>
                                 </div>
+                                <p className="mt-2 text-muted">Calculating {selectedIndex} statistics...</p>
+                            </div>
+                        ) : (
+                            <div className="text-center py-4 text-muted">
+                                <i className="ph-duotone ph-chart-bar" style={{ fontSize: '48px' }}></i>
+                                <p className="mt-2">No statistics available</p>
                             </div>
                         )}
                     </div>

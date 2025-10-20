@@ -43,20 +43,20 @@ const MapComponent = ({
                 projection={projection}
             >
                 {/* Navigation Controls (Zoom +/-) */}
-                <NavigationControl position="top-right" />
+                <NavigationControl position="bottom-right" />
 
                 {/* Scale Control */}
                 {/* <ScaleControl position="bottom-left" /> */}
 
                 {/* Geolocate Control (Find my location) */}
                 <GeolocateControl
-                    position="top-right"
+                    position="bottom-right"
                     trackUserLocation
                     showUserHeading
                 />
 
                 {/* Fullscreen Control */}
-                <FullscreenControl position="top-right" />
+                <FullscreenControl position="bottom-right" />
 
                 {/* Allow children components (markers, popups, layers, etc.) */}
                 {children}
