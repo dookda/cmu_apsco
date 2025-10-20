@@ -1,0 +1,47 @@
+/* Global styles for CMU APSCO application */
+/* Note: Main theme styles are loaded from /assets/css/style.css */
+
+/* Remove default React styles that might conflict with theme */
+body {
+  margin: 0;
+  /* Let the theme handle font-family */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Code blocks */
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+/* Ensure React root takes full height */
+#root {
+  min-height: 100vh;
+}
+
+/* Additional utilities that complement the theme */
+.text-truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Custom scrollbar for consistency */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}

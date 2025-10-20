@@ -8,10 +8,10 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
     ports:
-      - "5432:5432"
+      - "5433:5432"
     volumes:
       - postgis_data:/var/lib/postgresql/data
-      - ./init-scripts:/docker-entrypoint-initdb.d
+      - ./postgis/init-scripts:/docker-entrypoint-initdb.d
     restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
@@ -19,43 +19,61 @@ services:
       timeout: 5s
       retries: 5
 
-  # React Application Service (Development mode)
-  react-dev:
+  # FastAPI Backend Service
+  fastapi:
     build:
-      context: .
-      dockerfile: Dockerfile.dev
-    container_name: cmu_apsco_react_dev
+      context: ./fastapi
+      dockerfile: Dockerfile
+    container_name: cmu_apsco_fastapi
     ports:
-      - "3000:3000"
-    volumes:
-      - ./src:/app/src
-      - ./public:/app/public
-      - ./index.html:/app/index.html
-      - ./vite.config.js:/app/vite.config.js
-      - /app/node_modules
+      - "8000:8000"
     environment:
-      - NODE_ENV=development
-      - VITE_API_URL=http://localhost:5000
-      - VITE_DB_HOST=postgis
+      - DATABASE_URL=postgresql://postgres:postgres@postgis:5432/cmu_apsco_db
+      - API_HOST=0.0.0.0
+      - API_PORT=8000
+      - DEBUG=true
+    volumes:
+      - ./fastapi:/app
     depends_on:
       postgis:
         condition: service_healthy
     restart: unless-stopped
 
+  # React Application Service (Development mode)
+  react-dev:
+    build:
+      context: ./react
+      dockerfile: Dockerfile.dev
+    container_name: cmu_apsco_react_dev
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./react/src:/app/src
+      - ./react/public:/app/public
+      - ./react/index.html:/app/index.html
+      - ./react/vite.config.js:/app/vite.config.js
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+      - VITE_API_URL=http://localhost:8000
+      - VITE_DB_HOST=postgis
+    depends_on:
+      - fastapi
+    restart: unless-stopped
+
   # React Application Service (Production mode)
   react-prod:
     build:
-      context: .
+      context: ./react
       dockerfile: Dockerfile
     container_name: cmu_apsco_react_prod
     ports:
       - "80:80"
     environment:
-      - VITE_API_URL=http://localhost:5000
+      - VITE_API_URL=http://localhost:8000
       - VITE_DB_HOST=postgis
     depends_on:
-      postgis:
-        condition: service_healthy
+      - fastapi
     restart: unless-stopped
     profiles:
       - production

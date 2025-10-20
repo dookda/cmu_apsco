@@ -1,0 +1,141 @@
+/* Custom styles for CMU APSCO Dashboard */
+
+/* Active menu item highlighting */
+.pc-navbar .pc-item.active .pc-link {
+  background-color: rgba(var(--bs-primary-rgb), 0.1);
+  color: var(--bs-primary);
+  border-radius: 6px;
+}
+
+.pc-navbar .pc-item.active .pc-link .pc-micon i,
+.pc-navbar .pc-item.active .pc-link .pc-mtext {
+  color: var(--bs-primary);
+  font-weight: 600;
+}
+
+/* Sidebar smooth transitions */
+.pc-sidebar {
+  transition: margin-left 0.3s ease-in-out, width 0.3s ease-in-out;
+}
+
+.pc-container,
+.pc-header {
+  transition: margin-left 0.3s ease-in-out;
+}
+
+/* Hamburger menu hover effect */
+.pc-head-link:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+  border-radius: 4px;
+}
+
+/* Mobile sidebar overlay */
+.pc-sidebar.mob-sidebar-active::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1;
+}
+
+/* Ensure sidebar content is above overlay */
+.pc-sidebar .navbar-wrapper {
+  position: relative;
+  z-index: 2;
+}
+
+/* Timeline styles */
+.timeline {
+  position: relative;
+  padding-left: 30px;
+}
+
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 15px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: #e9ecef;
+}
+
+.timeline-item {
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.timeline-marker {
+  position: absolute;
+  left: -22px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  box-shadow: 0 0 0 2px #e9ecef;
+}
+
+.timeline-content {
+  margin-left: 10px;
+}
+
+.timeline-title {
+  margin: 0 0 5px 0;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.timeline-text {
+  margin: 0 0 5px 0;
+  font-size: 13px;
+  color: #6c757d;
+}
+
+/* Custom card styles */
+.card {
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  box-shadow: 0 2px 6px 0 rgba(67, 89, 113, 0.12);
+}
+
+.card-header {
+  background-color: #f8f9fa;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+/* Status badge styles */
+.badge {
+  font-size: 0.75em;
+}
+
+/* Icon spacing */
+.ph-duotone {
+  font-size: 1.2em;
+}
+
+/* Custom stat cards */
+.card.bg-primary .ph-duotone,
+.card.bg-success .ph-duotone,
+.card.bg-warning .ph-duotone,
+.card.bg-info .ph-duotone {
+  opacity: 0.8;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .timeline {
+    padding-left: 20px;
+  }
+
+  .timeline-marker {
+    left: -17px;
+    width: 10px;
+    height: 10px;
+  }
+
+  .timeline-content {
+    margin-left: 5px;
+  }
+}
