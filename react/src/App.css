@@ -123,6 +123,34 @@
   opacity: 0.8;
 }
 
+/* Dark theme support */
+[data-pc-theme="dark"] .pc-head-link:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+[data-pc-theme="dark"] .timeline::before {
+  background: #404956;
+}
+
+[data-pc-theme="dark"] .timeline-marker {
+  border: 2px solid #1e2128;
+  box-shadow: 0 0 0 2px #404956;
+}
+
+[data-pc-theme="dark"] .timeline-text {
+  color: #9ca3af;
+}
+
+[data-pc-theme="dark"] .card {
+  border: 1px solid #2d3139;
+  box-shadow: 0 2px 6px 0 rgba(0, 0, 0, 0.3);
+}
+
+[data-pc-theme="dark"] .card-header {
+  background-color: #2d3139;
+  border-bottom: 1px solid #404956;
+}
+
 /* Responsive adjustments */
 @media (max-width: 768px) {
   .timeline {

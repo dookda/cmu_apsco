@@ -303,14 +303,12 @@ const NDVIPage = () => {
                     <div className="card-body p-0" style={{ position: 'relative' }}>
                         {/* Basemap Selector */}
                         <div
+                            className="basemap-selector"
                             style={{
                                 position: 'absolute',
                                 top: '10px',
                                 left: '10px',
                                 zIndex: 1,
-                                backgroundColor: 'white',
-                                borderRadius: '8px',
-                                boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
                                 padding: '8px'
                             }}
                         >
@@ -340,14 +338,12 @@ const NDVIPage = () => {
                         {/* Legend */}
                         {ndviData && ndviData.legend && (
                             <div
+                                className="map-legend"
                                 style={{
                                     position: 'absolute',
                                     bottom: '20px',
                                     left: '10px',
                                     zIndex: 1,
-                                    backgroundColor: 'white',
-                                    borderRadius: '8px',
-                                    boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
                                     padding: '12px',
                                     minWidth: '200px'
                                 }}
@@ -359,11 +355,11 @@ const NDVIPage = () => {
                                     {ndviData.legend.colors.map((color, idx) => (
                                         <div key={idx} className="d-flex align-items-center gap-2">
                                             <div
+                                                className="legend-color-box"
                                                 style={{
                                                     width: '20px',
                                                     height: '20px',
-                                                    backgroundColor: color,
-                                                    border: '1px solid #ccc'
+                                                    backgroundColor: color
                                                 }}
                                             ></div>
                                             <span style={{ fontSize: '12px' }}>
@@ -390,6 +386,7 @@ const NDVIPage = () => {
                             style={{ width: '100%', height: '600px' }}
                             mapStyle={basemapOptions[basemap].url}
                             onMapLoad={handleMapLoad}
+                            projection="globe"
                         >
                             {/* Add NDVI raster layer when data is available */}
                             {ndviData && ndviData.tile_url && (
@@ -422,7 +419,7 @@ const NDVIPage = () => {
                             <>
                                 <div className="mb-3">
                                     <div className="d-flex justify-content-between align-items-center mb-2">
-                                        <span>Mean NDVI</span>
+                                        <span>Mean {selectedIndex}</span>
                                         <span className="badge bg-primary fs-6">{stats.statistics.mean}</span>
                                     </div>
                                     <div className="progress" style={{ height: '8px' }}>
@@ -513,7 +510,7 @@ const NDVIPage = () => {
                         ) : (
                             <>
                                 <p className="mb-3">
-                                    The Standardized Precipitation Index (SPI) measures precipitation anomalies
+                                    The Standardized Precipitation Index (SPI) measures precipitation anomalies (10 years)
                                     compared to historical averages to identify drought or wet conditions.
                                 </p>
 

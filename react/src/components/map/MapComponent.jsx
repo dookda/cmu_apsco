@@ -12,7 +12,8 @@ const MapComponent = ({
     style = { width: '100%', height: '600px' },
     mapStyle = 'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json',
     onMapLoad,
-    children
+    children,
+    projection,
 }) => {
     const mapRef = useRef(null);
     const [viewState, setViewState] = useState(initialViewState);
@@ -39,12 +40,13 @@ const MapComponent = ({
                 mapStyle={mapStyle}
                 onLoad={handleMapLoad}
                 attributionControl={true}
+                projection={projection}
             >
                 {/* Navigation Controls (Zoom +/-) */}
                 <NavigationControl position="top-right" />
 
                 {/* Scale Control */}
-                <ScaleControl position="bottom-left" />
+                {/* <ScaleControl position="bottom-left" /> */}
 
                 {/* Geolocate Control (Find my location) */}
                 <GeolocateControl

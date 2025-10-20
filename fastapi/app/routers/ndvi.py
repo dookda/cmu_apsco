@@ -181,31 +181,33 @@ def calculate_precipitation_anomaly(start_date: str, end_date: str, study_area: 
 
         # Get precipitation for the specified period
         current_precip = (chirps
-                         .filterDate(start_date, end_date)
-                         .filterBounds(roi)
-                         .sum()
-                         .clip(roi))
+                          .filterDate(start_date, end_date)
+                          .filterBounds(roi)
+                          .sum()
+                          .clip(roi))
 
-        # Calculate long-term mean (using past 5 years as reference)
+        # Calculate long-term mean (using past 10 years as reference)
         from datetime import datetime, timedelta
         end_dt = datetime.strptime(end_date, '%Y-%m-%d')
         start_dt = datetime.strptime(start_date, '%Y-%m-%d')
         days_diff = (end_dt - start_dt).days
 
-        # Go back 5 years for historical reference
-        historical_start = (start_dt - timedelta(days=365*5)).strftime('%Y-%m-%d')
-        historical_end = (end_dt - timedelta(days=365*5)).strftime('%Y-%m-%d')
+        # Go back 10 years for historical reference
+        historical_start = (
+            start_dt - timedelta(days=365*10)).strftime('%Y-%m-%d')
+        historical_end = (end_dt - timedelta(days=365*10)).strftime('%Y-%m-%d')
 
         historical_precip = (chirps
-                            .filterDate(historical_start, historical_end)
-                            .filterBounds(roi)
-                            .sum()
-                            .clip(roi))
+                             .filterDate(historical_start, historical_end)
+                             .filterBounds(roi)
+                             .sum()
+                             .clip(roi))
 
         # Calculate standardized anomaly (simple version of SPI)
         # SPI = (current - mean) / std_dev
         # For simplicity, we'll use (current - historical) / historical as a proxy
-        anomaly = current_precip.subtract(historical_precip).divide(historical_precip).multiply(100)
+        anomaly = current_precip.subtract(historical_precip).divide(
+            historical_precip).multiply(100)
 
         return anomaly.rename('SPI'), roi
 
@@ -274,12 +276,14 @@ def get_modis_ndmi(start_date: str, end_date: str, study_area: str = "Chiang Mai
         collection = (ee.ImageCollection('MODIS/061/MOD09A1')
                       .filterBounds(roi)
                       .filterDate(start_date, end_date)
-                      .select(['sur_refl_b02', 'sur_refl_b06']))  # NIR and SWIR
+                      # NIR and SWIR
+                      .select(['sur_refl_b02', 'sur_refl_b06']))
 
         # Calculate NDMI for the collection
         def calculate_ndmi(image):
             # NDMI = (NIR - SWIR) / (NIR + SWIR)
-            ndmi = image.normalizedDifference(['sur_refl_b02', 'sur_refl_b06']).rename('NDMI')
+            ndmi = image.normalizedDifference(
+                ['sur_refl_b02', 'sur_refl_b06']).rename('NDMI')
             return ndmi
 
         # Get mean composite
@@ -546,7 +550,8 @@ async def get_spi_stats(
             start_date = (datetime.now() - timedelta(days=30)
                           ).strftime('%Y-%m-%d')
 
-        spi_image, roi = calculate_precipitation_anomaly(start_date, end_date, study_area)
+        spi_image, roi = calculate_precipitation_anomaly(
+            start_date, end_date, study_area)
 
         # Calculate statistics
         stats = spi_image.reduceRegion(
@@ -608,7 +613,8 @@ async def get_spi_map_url(
             start_date = (datetime.now() - timedelta(days=30)
                           ).strftime('%Y-%m-%d')
 
-        spi_image, roi = calculate_precipitation_anomaly(start_date, end_date, study_area)
+        spi_image, roi = calculate_precipitation_anomaly(
+            start_date, end_date, study_area)
 
         # Visualization parameters for SPI
         vis_params = {
@@ -629,8 +635,10 @@ async def get_spi_map_url(
         map_id = spi_image.getMapId(vis_params)
 
         # Get bounds for the study area
-        study_area_bounds = STUDY_AREAS.get(study_area, STUDY_AREAS["Chiang Mai"])["bounds"]
-        study_area_info = STUDY_AREAS.get(study_area, STUDY_AREAS["Chiang Mai"])
+        study_area_bounds = STUDY_AREAS.get(
+            study_area, STUDY_AREAS["Chiang Mai"])["bounds"]
+        study_area_info = STUDY_AREAS.get(
+            study_area, STUDY_AREAS["Chiang Mai"])
 
         return {
             "tile_url": map_id['tile_fetcher'].url_format,
@@ -775,8 +783,10 @@ async def get_ndmi_map_url(
         map_id = ndmi_image.getMapId(vis_params)
 
         # Get bounds for the study area
-        study_area_bounds = STUDY_AREAS.get(study_area, STUDY_AREAS["Chiang Mai"])["bounds"]
-        study_area_info = STUDY_AREAS.get(study_area, STUDY_AREAS["Chiang Mai"])
+        study_area_bounds = STUDY_AREAS.get(
+            study_area, STUDY_AREAS["Chiang Mai"])["bounds"]
+        study_area_info = STUDY_AREAS.get(
+            study_area, STUDY_AREAS["Chiang Mai"])
 
         return {
             "tile_url": map_id['tile_fetcher'].url_format,
@@ -855,8 +865,10 @@ async def get_ndvi_map_url(
         map_id = ndvi_image.getMapId(vis_params)
 
         # Get bounds for the study area
-        study_area_bounds = STUDY_AREAS.get(study_area, STUDY_AREAS["Chiang Mai"])["bounds"]
-        study_area_info = STUDY_AREAS.get(study_area, STUDY_AREAS["Chiang Mai"])
+        study_area_bounds = STUDY_AREAS.get(
+            study_area, STUDY_AREAS["Chiang Mai"])["bounds"]
+        study_area_info = STUDY_AREAS.get(
+            study_area, STUDY_AREAS["Chiang Mai"])
 
         return {
             "tile_url": map_id['tile_fetcher'].url_format,

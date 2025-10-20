@@ -66,6 +66,54 @@
     z-index: 1000;
 }
 
+/* Dark theme support for MapLibre controls */
+[data-pc-theme="dark"] .maplibregl-ctrl-group {
+    background: #1e2128;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+[data-pc-theme="dark"] .maplibregl-ctrl-group button {
+    background: #1e2128;
+    color: #e5e7eb;
+}
+
+[data-pc-theme="dark"] .maplibregl-ctrl-group button:hover {
+    background-color: #2d3139;
+}
+
+[data-pc-theme="dark"] .maplibregl-ctrl-icon {
+    filter: invert(1) brightness(0.9);
+}
+
+/* Attribution dark mode */
+[data-pc-theme="dark"] .maplibregl-ctrl-attrib {
+    background-color: rgba(30, 33, 40, 0.8);
+    color: #e5e7eb;
+}
+
+[data-pc-theme="dark"] .maplibregl-ctrl-attrib a {
+    color: #93c5fd;
+}
+
+/* Popup dark mode */
+[data-pc-theme="dark"] .maplibregl-popup-content {
+    background-color: #1e2128;
+    color: #e5e7eb;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+[data-pc-theme="dark"] .maplibregl-popup-close-button {
+    color: #e5e7eb;
+}
+
+[data-pc-theme="dark"] .maplibregl-popup-close-button:hover {
+    background-color: #2d3139;
+}
+
+[data-pc-theme="dark"] .maplibregl-popup-tip {
+    border-top-color: #1e2128;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
     .map-container {
