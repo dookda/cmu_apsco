@@ -36,6 +36,14 @@ const Sidebar = () => {
                                 <span className="pc-mtext">Map</span>
                             </Link>
                         </li>
+                        <li className={`pc-item ${isActive('/ndvi')}`}>
+                            <Link to="/ndvi" className="pc-link">
+                                <span className="pc-micon">
+                                    <i className="ph-duotone ph-plant"></i>
+                                </span>
+                                <span className="pc-mtext">Drought Monitoring</span>
+                            </Link>
+                        </li>
                         <li className={`pc-item ${isActive('/data')}`}>
                             <Link to="/data" className="pc-link">
                                 <span className="pc-micon">

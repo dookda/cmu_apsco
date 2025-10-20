@@ -32,6 +32,8 @@ services:
       - API_HOST=0.0.0.0
       - API_PORT=8000
       - DEBUG=true
+      - GEE_SERVICE_ACCOUNT=gee-apsco@sakdagee.iam.gserviceaccount.com
+      - GEE_KEY_FILE=/app/sakdagee-aac5df75dc7f.json
     volumes:
       - ./fastapi:/app
     depends_on:

@@ -4,6 +4,20 @@ from pydantic import BaseModel
 import os
 from typing import Optional
 import uvicorn
+from dotenv import load_dotenv
+from app.routers import ndvi
+
+# Load environment variables from .env file
+load_dotenv()
+
+print("=" * 60)
+print("CMU APSCO API Starting...")
+print("=" * 60)
+print(f"Environment Variables:")
+print(f"  GEE_SERVICE_ACCOUNT: {os.getenv('GEE_SERVICE_ACCOUNT')}")
+print(f"  GEE_KEY_FILE: {os.getenv('GEE_KEY_FILE')}")
+print(f"  Working Directory: {os.getcwd()}")
+print("=" * 60)
 
 app = FastAPI(title="CMU APSCO API", version="1.0.0")
 
@@ -15,6 +29,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Include routers
+app.include_router(ndvi.router)
 
 # Health check endpoint
 

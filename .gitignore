@@ -137,3 +137,8 @@ dist
 # Vite logs files
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
+
+# Google Earth Engine service account keys (security)
+# Uncomment if you want to exclude from git:
+# fastapi/*-*.json
+# fastapi/gee-*.json

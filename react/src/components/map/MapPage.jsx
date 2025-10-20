@@ -5,6 +5,41 @@ import { Marker, Popup } from 'react-map-gl/maplibre';
 
 const MapPage = () => {
     const [selectedMarker, setSelectedMarker] = useState(null);
+    const [selectedBasemap, setSelectedBasemap] = useState('positron');
+
+    // Define available basemaps
+    const basemaps = [
+        {
+            id: 'positron',
+            name: 'Light',
+            url: 'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json',
+            description: 'Clean and minimal style'
+        },
+        {
+            id: 'dark-matter',
+            name: 'Dark',
+            url: 'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json',
+            description: 'Dark theme style'
+        },
+        {
+            id: 'voyager',
+            name: 'Voyager',
+            url: 'https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json',
+            description: 'Colorful and detailed'
+        },
+        {
+            id: 'osm-bright',
+            name: 'OSM Bright',
+            url: 'https://tiles.openfreemap.org/styles/bright',
+            description: 'OpenStreetMap style'
+        },
+        {
+            id: 'satellite',
+            name: 'Satellite',
+            url: 'https://api.maptiler.com/maps/hybrid/style.json?key=get_your_own_OpIi9ZULNHzrESv6T2vL',
+            description: 'Satellite imagery'
+        }
+    ];
 
     // Example markers for Thailand
     const markers = [
@@ -43,13 +78,49 @@ const MapPage = () => {
         >
             <div className="col-12">
                 <div className="card">
-                    <div className="card-header">
-                        <h5 className="mb-0">
-                            <i className="ph-duotone ph-map-pin me-2"></i>
-                            Drought Map - Thailand
-                        </h5>
-                    </div>
-                    <div className="card-body p-0">
+                    <div className="card-body p-0" style={{ position: 'relative' }}>
+                        {/* Basemap Switcher Control */}
+                        <div
+                            style={{
+                                position: 'absolute',
+                                top: '10px',
+                                left: '10px',
+                                zIndex: 1,
+                                backgroundColor: 'white',
+                                borderRadius: '8px',
+                                boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
+                                padding: '12px',
+                                maxWidth: '200px'
+                            }}
+                        >
+                            <h6 className="mb-2" style={{ fontSize: '14px', fontWeight: 'bold' }}>
+                                <i className="ph-duotone ph-map me-2"></i>
+                                Basemap
+                            </h6>
+                            <div className="d-flex flex-column gap-2">
+                                {basemaps.map(basemap => (
+                                    <div key={basemap.id} className="form-check">
+                                        <input
+                                            className="form-check-input"
+                                            type="radio"
+                                            name="basemap"
+                                            id={`basemap-${basemap.id}`}
+                                            value={basemap.id}
+                                            checked={selectedBasemap === basemap.id}
+                                            onChange={(e) => setSelectedBasemap(e.target.value)}
+                                        />
+                                        <label
+                                            className="form-check-label"
+                                            htmlFor={`basemap-${basemap.id}`}
+                                            style={{ fontSize: '13px', cursor: 'pointer' }}
+                                        >
+                                            {basemap.name}
+                                        </label>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+
                         <MapComponent
                             initialViewState={{
                                 longitude: 100.5,
@@ -57,6 +128,7 @@ const MapPage = () => {
                                 zoom: 5.5
                             }}
                             style={{ width: '100%', height: '600px' }}
+                            mapStyle={basemaps.find(b => b.id === selectedBasemap)?.url}
                             onMapLoad={handleMapLoad}
                         >
                             {/* Add markers */}
@@ -122,7 +194,9 @@ const MapPage = () => {
                             </li>
                             <li className="list-group-item d-flex justify-content-between align-items-center">
                                 <span>Base Map</span>
-                                <span className="badge bg-info">Carto Positron</span>
+                                <span className="badge bg-info">
+                                    {basemaps.find(b => b.id === selectedBasemap)?.name || 'Light'}
+                                </span>
                             </li>
                             <li className="list-group-item d-flex justify-content-between align-items-center">
                                 <span>Projection</span>
