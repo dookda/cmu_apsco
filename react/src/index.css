@@ -66,6 +66,11 @@ code {
   border-color: #2d3139;
 }
 
+/* Global card radius */
+.card {
+  border-radius: 25px !important;
+}
+
 [data-pc-theme="dark"] .card-body {
   color: #e5e7eb;
 }
@@ -141,7 +146,7 @@ code {
 .basemap-selector {
   background-color: white;
   border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 [data-pc-theme="dark"] .map-legend,
@@ -149,7 +154,7 @@ code {
   background-color: #1e2128 !important;
   border-color: #2d3139;
   color: #e5e7eb;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
 }
 
 /* Legend color box borders */
@@ -221,28 +226,28 @@ code {
   color: #e5e7eb;
 }
 
-[data-pc-theme="dark"] .table > :not(caption) > * > * {
+[data-pc-theme="dark"] .table> :not(caption)>*>* {
   border-bottom-color: #404956;
   background-color: transparent;
 }
 
-[data-pc-theme="dark"] .table-striped > tbody > tr:nth-of-type(odd) > * {
+[data-pc-theme="dark"] .table-striped>tbody>tr:nth-of-type(odd)>* {
   background-color: rgba(255, 255, 255, 0.03);
 }
 
-[data-pc-theme="dark"] .table-hover > tbody > tr:hover > * {
+[data-pc-theme="dark"] .table-hover>tbody>tr:hover>* {
   background-color: rgba(255, 255, 255, 0.05);
 }
 
-[data-pc-theme="dark"] .table > thead {
+[data-pc-theme="dark"] .table>thead {
   border-bottom: 2px solid #404956;
 }
 
-[data-pc-theme="dark"] .table-bordered > :not(caption) > * {
+[data-pc-theme="dark"] .table-bordered> :not(caption)>* {
   border-color: #404956;
 }
 
-[data-pc-theme="dark"] .table-bordered > :not(caption) > * > * {
+[data-pc-theme="dark"] .table-bordered> :not(caption)>*>* {
   border-color: #404956;
 }
 
@@ -353,6 +358,12 @@ code {
 .maplibregl-ctrl-group button {
   background-color: white;
   border: none;
+}
+
+/* Map container rounded corners (clip map tiles) */
+.map-container {
+  border-radius: 25px !important;
+  overflow: hidden;
 }
 
 .mapboxgl-ctrl-group button:hover,

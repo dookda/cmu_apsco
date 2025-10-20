@@ -5,7 +5,7 @@ import os
 from typing import Optional
 import uvicorn
 from dotenv import load_dotenv
-from app.routers import ndvi
+from app.routers import ndvi, survey
 
 # Load environment variables from .env file
 load_dotenv()
@@ -32,6 +32,7 @@ app.add_middleware(
 
 # Include routers
 app.include_router(ndvi.router)
+app.include_router(survey.router)
 
 # Health check endpoint
 

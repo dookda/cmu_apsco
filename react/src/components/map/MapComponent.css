@@ -114,6 +114,58 @@
     border-top-color: #1e2128;
 }
 
+/* MapboxDraw Control Styling to match MapLibre controls */
+.mapbox-gl-draw_ctrl-draw-btn {
+    background: white;
+    border: none;
+    width: 29px;
+    height: 29px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.mapbox-gl-draw_ctrl-draw-btn:hover {
+    background-color: #f0f0f0;
+}
+
+.mapbox-gl-draw_ctrl-draw-btn.active {
+    background-color: #e0e0e0;
+}
+
+.mapboxgl-ctrl-group.mapboxgl-ctrl,
+.mapbox-gl-draw_ctrl-draw-btn {
+    background: white;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Dark theme support for MapboxDraw */
+[data-pc-theme="dark"] .mapbox-gl-draw_ctrl-draw-btn {
+    background: #1e2128;
+    color: #e5e7eb;
+}
+
+[data-pc-theme="dark"] .mapbox-gl-draw_ctrl-draw-btn:hover {
+    background-color: #2d3139;
+}
+
+[data-pc-theme="dark"] .mapbox-gl-draw_ctrl-draw-btn.active {
+    background-color: #3d414a;
+}
+
+[data-pc-theme="dark"] .mapboxgl-ctrl-group.mapboxgl-ctrl {
+    background: #1e2128;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+[data-pc-theme="dark"] .mapbox-gl-draw_polygon,
+[data-pc-theme="dark"] .mapbox-gl-draw_trash {
+    filter: invert(1) brightness(0.9);
+}
+
 /* Responsive */
 @media (max-width: 768px) {
     .map-container {

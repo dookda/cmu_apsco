@@ -1152,6 +1152,239 @@ def interpret_ndmi(ndmi_value: float) -> str:
         return "Very high moisture - Saturated vegetation"
 
 
+@router.post("/stats/custom")
+async def get_ndvi_stats_custom(request: dict):
+    """
+    Get NDVI statistics for a custom drawn polygon
+
+    Expects JSON body with:
+    - start_date: Start date (YYYY-MM-DD)
+    - end_date: End date (YYYY-MM-DD)
+    - geometry: GeoJSON polygon geometry
+    """
+    if not EE_INITIALIZED:
+        raise HTTPException(
+            status_code=503, detail="Earth Engine not initialized. Please configure authentication.")
+
+    try:
+        start_date = request.get('start_date')
+        end_date = request.get('end_date')
+        geometry = request.get('geometry')
+
+        if not geometry:
+            raise HTTPException(status_code=400, detail="Geometry is required")
+
+        # Create EE geometry from GeoJSON
+        roi = ee.Geometry(geometry)
+
+        # Get MODIS NDVI
+        collection = (ee.ImageCollection('MODIS/061/MOD13Q1')
+                      .filterBounds(roi)
+                      .filterDate(start_date, end_date)
+                      .select('NDVI'))
+
+        # Get mean composite and scale
+        ndvi_composite = collection.mean().clip(roi)
+        ndvi_scaled = ndvi_composite.multiply(0.0001)
+
+        # Calculate statistics
+        stats = ndvi_scaled.reduceRegion(
+            reducer=ee.Reducer.mean().combine(
+                reducer2=ee.Reducer.minMax(),
+                sharedInputs=True
+            ).combine(
+                reducer2=ee.Reducer.stdDev(),
+                sharedInputs=True
+            ),
+            geometry=roi,
+            scale=250,  # MODIS resolution
+            maxPixels=1e9
+        ).getInfo()
+
+        mean_val = stats.get('NDVI', 0)
+
+        return {
+            "period": {
+                "start_date": start_date,
+                "end_date": end_date
+            },
+            "statistics": {
+                "mean": round(mean_val, 4),
+                "min": round(stats.get('NDVI_min', 0), 4),
+                "max": round(stats.get('NDVI_max', 0), 4),
+                "std_dev": round(stats.get('NDVI_stdDev', 0), 4)
+            },
+            "interpretation": interpret_ndvi(mean_val)
+        }
+
+    except Exception as e:
+        raise HTTPException(
+            status_code=500, detail=f"Error calculating NDVI statistics: {str(e)}")
+
+
+@router.post("/spi/stats/custom")
+async def get_spi_stats_custom(request: dict):
+    """
+    Get SPI statistics for a custom drawn polygon
+
+    Expects JSON body with:
+    - start_date: Start date (YYYY-MM-DD)
+    - end_date: End date (YYYY-MM-DD)
+    - geometry: GeoJSON polygon geometry
+    """
+    if not EE_INITIALIZED:
+        raise HTTPException(
+            status_code=503, detail="Earth Engine not initialized. Please configure authentication.")
+
+    try:
+        start_date = request.get('start_date')
+        end_date = request.get('end_date')
+        geometry = request.get('geometry')
+
+        if not geometry:
+            raise HTTPException(status_code=400, detail="Geometry is required")
+
+        # Create EE geometry from GeoJSON
+        roi = ee.Geometry(geometry)
+
+        # Load CHIRPS precipitation data
+        chirps = ee.ImageCollection('UCSB-CHG/CHIRPS/DAILY')
+
+        # Get precipitation for the specified period
+        current_precip = (chirps
+                          .filterDate(start_date, end_date)
+                          .filterBounds(roi)
+                          .sum()
+                          .clip(roi))
+
+        # Calculate historical reference
+        from datetime import datetime, timedelta
+        end_dt = datetime.strptime(end_date, '%Y-%m-%d')
+        start_dt = datetime.strptime(start_date, '%Y-%m-%d')
+
+        historical_start = (start_dt - timedelta(days=365*10)).strftime('%Y-%m-%d')
+        historical_end = (end_dt - timedelta(days=365*10)).strftime('%Y-%m-%d')
+
+        historical_precip = (chirps
+                             .filterDate(historical_start, historical_end)
+                             .filterBounds(roi)
+                             .sum()
+                             .clip(roi))
+
+        # Calculate anomaly
+        anomaly = current_precip.subtract(historical_precip).divide(
+            historical_precip).multiply(100).rename('SPI')
+
+        # Calculate statistics
+        stats = anomaly.reduceRegion(
+            reducer=ee.Reducer.mean().combine(
+                reducer2=ee.Reducer.minMax(),
+                sharedInputs=True
+            ).combine(
+                reducer2=ee.Reducer.stdDev(),
+                sharedInputs=True
+            ),
+            geometry=roi,
+            scale=5000,  # CHIRPS resolution
+            maxPixels=1e9
+        ).getInfo()
+
+        mean_val = stats.get('SPI', 0)
+
+        return {
+            "period": {
+                "start_date": start_date,
+                "end_date": end_date
+            },
+            "statistics": {
+                "mean": round(mean_val, 2),
+                "min": round(stats.get('SPI_min', 0), 2),
+                "max": round(stats.get('SPI_max', 0), 2),
+                "std_dev": round(stats.get('SPI_stdDev', 0), 2)
+            },
+            "interpretation": interpret_spi(mean_val)
+        }
+
+    except Exception as e:
+        raise HTTPException(
+            status_code=500, detail=f"Error calculating SPI statistics: {str(e)}")
+
+
+@router.post("/ndmi/stats/custom")
+async def get_ndmi_stats_custom(request: dict):
+    """
+    Get NDMI statistics for a custom drawn polygon
+
+    Expects JSON body with:
+    - start_date: Start date (YYYY-MM-DD)
+    - end_date: End date (YYYY-MM-DD)
+    - geometry: GeoJSON polygon geometry
+    """
+    if not EE_INITIALIZED:
+        raise HTTPException(
+            status_code=503, detail="Earth Engine not initialized. Please configure authentication.")
+
+    try:
+        start_date = request.get('start_date')
+        end_date = request.get('end_date')
+        geometry = request.get('geometry')
+
+        if not geometry:
+            raise HTTPException(status_code=400, detail="Geometry is required")
+
+        # Create EE geometry from GeoJSON
+        roi = ee.Geometry(geometry)
+
+        # Load MODIS Surface Reflectance
+        collection = (ee.ImageCollection('MODIS/061/MOD09A1')
+                      .filterBounds(roi)
+                      .filterDate(start_date, end_date)
+                      .select(['sur_refl_b02', 'sur_refl_b06']))
+
+        # Calculate NDMI
+        def calculate_ndmi(image):
+            ndmi = image.normalizedDifference(
+                ['sur_refl_b02', 'sur_refl_b06']).rename('NDMI')
+            return ndmi
+
+        ndmi_collection = collection.map(calculate_ndmi)
+        ndmi_composite = ndmi_collection.mean().clip(roi)
+
+        # Calculate statistics
+        stats = ndmi_composite.reduceRegion(
+            reducer=ee.Reducer.mean().combine(
+                reducer2=ee.Reducer.minMax(),
+                sharedInputs=True
+            ).combine(
+                reducer2=ee.Reducer.stdDev(),
+                sharedInputs=True
+            ),
+            geometry=roi,
+            scale=500,  # MODIS resolution
+            maxPixels=1e9
+        ).getInfo()
+
+        mean_val = stats.get('NDMI', 0)
+
+        return {
+            "period": {
+                "start_date": start_date,
+                "end_date": end_date
+            },
+            "statistics": {
+                "mean": round(mean_val, 4),
+                "min": round(stats.get('NDMI_min', 0), 4),
+                "max": round(stats.get('NDMI_max', 0), 4),
+                "std_dev": round(stats.get('NDMI_stdDev', 0), 4)
+            },
+            "interpretation": interpret_ndmi(mean_val)
+        }
+
+    except Exception as e:
+        raise HTTPException(
+            status_code=500, detail=f"Error calculating NDMI statistics: {str(e)}")
+
+
 @router.get("/health")
 async def ndvi_health_check():
     """Check if Earth Engine is initialized and working"""

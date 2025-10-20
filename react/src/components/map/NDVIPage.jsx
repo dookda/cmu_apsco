@@ -107,6 +107,8 @@ const NDVIPage = () => {
             }
 
             const data = await response.json();
+            console.log(`[${selectedIndex}] Map data received:`, data);
+            console.log(`[${selectedIndex}] Tile URL:`, data.tile_url);
             setNdviData(data);
 
             // Update map center and zoom based on study area
@@ -162,7 +164,7 @@ const NDVIPage = () => {
     }, [dateRange, selectedArea, selectedIndex]);
 
     const handleMapLoad = (map) => {
-        console.log('Map loaded', map);
+        console.log('[NDVIPage] Map loaded', map);
         mapRef.current = map;
 
         // Set globe projection
@@ -172,6 +174,17 @@ const NDVIPage = () => {
 
         // Add click event for showing index values
         map.on('click', handleMapClick);
+
+        // Debug: Log when layers are added
+        map.on('sourcedata', (e) => {
+            if (e.sourceId && e.sourceId.includes('source')) {
+                console.log('[NDVIPage] Source data event:', e.sourceId, e.isSourceLoaded);
+            }
+        });
+
+        map.on('error', (e) => {
+            console.error('[NDVIPage] Map error:', e);
+        });
     };
 
     const handleMapClick = async (e) => {
@@ -490,22 +503,30 @@ const NDVIPage = () => {
                             projection="globe"
                         >
                             {/* Add index raster layer when data is available and layer is visible */}
-                            {showIndexLayer && ndviData && ndviData.tile_url && (
-                                <Source
-                                    id="ndvi-source"
-                                    type="raster"
-                                    tiles={[ndviData.tile_url]}
-                                    tileSize={256}
-                                >
-                                    <Layer
-                                        id="ndvi-layer"
+                            {showIndexLayer && ndviData && ndviData.tile_url && (() => {
+                                console.log(`[NDVIPage] Rendering ${selectedIndex} layer with opacity ${opacity}`);
+                                console.log(`[NDVIPage] Tile URL:`, ndviData.tile_url);
+                                return (
+                                    <Source
+                                        id={`${selectedIndex.toLowerCase()}-source`}
                                         type="raster"
-                                        paint={{
-                                            'raster-opacity': opacity
-                                        }}
-                                    />
-                                </Source>
-                            )}
+                                        tiles={[ndviData.tile_url]}
+                                        tileSize={256}
+                                        key={`${selectedIndex}-${dateRange.startDate}-${dateRange.endDate}-${selectedArea}`}
+                                    >
+                                        <Layer
+                                            id={`${selectedIndex.toLowerCase()}-layer`}
+                                            type="raster"
+                                            paint={{
+                                                'raster-opacity': opacity,
+                                                'raster-fade-duration': 0
+                                            }}
+                                            minzoom={0}
+                                            maxzoom={22}
+                                        />
+                                    </Source>
+                                );
+                            })()}
                         </MapComponent>
                     </div>
                 </div>

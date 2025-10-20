@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, useState } from 'react';
-import Map, { NavigationControl, ScaleControl, GeolocateControl, FullscreenControl } from 'react-map-gl/maplibre';
+import Map, { NavigationControl, ScaleControl, GeolocateControl } from 'react-map-gl/maplibre';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import './MapComponent.css';
 
@@ -43,20 +43,17 @@ const MapComponent = ({
                 projection={projection}
             >
                 {/* Navigation Controls (Zoom +/-) */}
-                <NavigationControl position="bottom-right" />
-
-                {/* Scale Control */}
-                {/* <ScaleControl position="bottom-left" /> */}
+                <NavigationControl position="top-right" />
 
                 {/* Geolocate Control (Find my location) */}
                 <GeolocateControl
-                    position="bottom-right"
+                    position="top-right"
                     trackUserLocation
                     showUserHeading
                 />
 
-                {/* Fullscreen Control */}
-                <FullscreenControl position="bottom-right" />
+                {/* Scale Control */}
+                {/* <ScaleControl position="bottom-left" /> */}
 
                 {/* Allow children components (markers, popups, layers, etc.) */}
                 {children}
