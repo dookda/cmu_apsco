@@ -142,3 +142,4 @@ vite.config.ts.timestamp-*
 # Uncomment if you want to exclude from git:
 # fastapi/*-*.json
 # fastapi/gee-*.json
+fastapi/sakdagee-aac5df75dc7f.json
