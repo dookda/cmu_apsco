@@ -1,7 +1,7 @@
 import React from 'react';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { useAuth } from '../../contexts/AuthContext';
-import { UserProfile } from '../auth';
+import { UserProfile, GoogleAuthButton } from '../auth';
 
 const Header = () => {
     const { language, toggleLanguage, t } = useLanguage();
@@ -161,9 +161,13 @@ const Header = () => {
                             </div>
                         </li>
 
-                        {isAuthenticated && (
+                        {isAuthenticated ? (
                             <li className="dropdown pc-h-item header-user-profile">
                                 <UserProfile />
+                            </li>
+                        ) : (
+                            <li className="pc-h-item">
+                                <GoogleAuthButton />
                             </li>
                         )}
                     </ul>
