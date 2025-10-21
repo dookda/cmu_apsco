@@ -1,8 +1,11 @@
 import React from 'react';
 import { useLanguage } from '../../contexts/LanguageContext';
+import { useAuth } from '../../contexts/AuthContext';
+import { UserProfile } from '../auth';
 
 const Header = () => {
     const { language, toggleLanguage, t } = useLanguage();
+    const { isAuthenticated } = useAuth();
 
     const handleSidebarToggle = (e) => {
         e.preventDefault();
@@ -72,22 +75,47 @@ const Header = () => {
                 {/* [Mobile Media Block end] */}
                 <div className="ms-auto">
                     <ul className="list-unstyled">
-                        {/* Language Switcher */}
-                        <li className="pc-h-item">
+                        {/* Language Switcher - Optimized */}
+                        <li className="dropdown pc-h-item">
                             <a
-                                href="#!"
-                                className="pc-head-link me-0"
-                                onClick={(e) => {
-                                    e.preventDefault();
-                                    toggleLanguage();
-                                }}
-                                title={language === 'en' ? 'Switch to Thai' : 'เปลี่ยนเป็นภาษาอังกฤษ'}
+                                className="pc-head-link dropdown-toggle arrow-none me-0"
+                                data-bs-toggle="dropdown"
+                                href="#"
+                                role="button"
+                                aria-haspopup="true"
+                                aria-expanded="false"
                             >
                                 <i className="ph-duotone ph-translate"></i>
                                 <span className="ms-1 d-none d-md-inline-block fw-bold">
-                                    {language === 'en' ? 'TH' : 'EN'}
+                                    {language === 'en' ? 'EN' : 'ไทย'}
                                 </span>
                             </a>
+                            <div className="dropdown-menu dropdown-menu-end pc-h-dropdown">
+                                <a
+                                    href="#!"
+                                    className={`dropdown-item ${language === 'en' ? 'active' : ''}`}
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        if (language !== 'en') toggleLanguage();
+                                    }}
+                                >
+                                    <i className="ph-duotone ph-flag"></i>
+                                    <span>English</span>
+                                    {language === 'en' && <i className="ph-fill ph-check-circle ms-auto text-success"></i>}
+                                </a>
+                                <a
+                                    href="#!"
+                                    className={`dropdown-item ${language === 'th' ? 'active' : ''}`}
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        if (language !== 'th') toggleLanguage();
+                                    }}
+                                >
+                                    <i className="ph-duotone ph-flag"></i>
+                                    <span>ภาษาไทย</span>
+                                    {language === 'th' && <i className="ph-fill ph-check-circle ms-auto text-success"></i>}
+                                </a>
+                            </div>
                         </li>
 
                         <li className="dropdown pc-h-item">
@@ -133,34 +161,11 @@ const Header = () => {
                             </div>
                         </li>
 
-                        <li className="dropdown pc-h-item header-user-profile">
-                            <a className="pc-head-link dropdown-toggle arrow-none me-0" data-bs-toggle="dropdown" href="#" role="button"
-                                aria-haspopup="false" data-bs-auto-close="outside" aria-expanded="false">
-                                <img src="/assets/images/user/avatar-2.jpg" alt="user-image" className="user-avtar" />
-                            </a>
-                            <div className="dropdown-menu dropdown-menu-end pc-h-dropdown">
-                                <a href="#!" className="dropdown-item">
-                                    <i className="ph-duotone ph-user"></i>
-                                    <span>{t('myAccount')}</span>
-                                </a>
-                                <a href="#!" className="dropdown-item">
-                                    <i className="ph-duotone ph-gear"></i>
-                                    <span>{t('settings')}</span>
-                                </a>
-                                <a href="#!" className="dropdown-item">
-                                    <i className="ph-duotone ph-lifebuoy"></i>
-                                    <span>{t('support')}</span>
-                                </a>
-                                <a href="#!" className="dropdown-item">
-                                    <i className="ph-duotone ph-lock-key"></i>
-                                    <span>{t('lockScreen')}</span>
-                                </a>
-                                <a href="#!" className="dropdown-item">
-                                    <i className="ph-duotone ph-power"></i>
-                                    <span>{t('logout')}</span>
-                                </a>
-                            </div>
-                        </li>
+                        {isAuthenticated && (
+                            <li className="dropdown pc-h-item header-user-profile">
+                                <UserProfile />
+                            </li>
+                        )}
                     </ul>
                 </div>
             </div>

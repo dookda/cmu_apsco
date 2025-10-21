@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { DashboardLayout } from '../layout';
 import MapComponent from './MapComponent';
+import { useLanguage } from '../../contexts/LanguageContext';
 
 const NDVIPage = () => {
+    const { t, format, getProvinceName } = useLanguage();
     const [ndviData, setNdviData] = useState(null);
     const [loading, setLoading] = useState(false);
     const [stats, setStats] = useState(null);
@@ -25,27 +27,27 @@ const NDVIPage = () => {
     // Available basemap options
     const basemapOptions = {
         positron: {
-            name: 'Light',
+            name: t('basemaps.light'),
             url: 'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json',
             icon: 'ph-sun'
         },
         'dark-matter': {
-            name: 'Dark',
+            name: t('basemaps.dark'),
             url: 'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json',
             icon: 'ph-moon'
         },
         voyager: {
-            name: 'Voyager',
+            name: t('basemaps.voyager'),
             url: 'https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json',
             icon: 'ph-map-trifold'
         },
         osm: {
-            name: 'Streets',
+            name: t('basemaps.streets'),
             url: 'https://tiles.openfreemap.org/styles/liberty',
             icon: 'ph-road-horizon'
         },
         satellite: {
-            name: 'Satellite',
+            name: t('basemaps.satellite'),
             url: {
                 version: 8,
                 sources: {
@@ -305,14 +307,14 @@ const NDVIPage = () => {
                         5000
                     );
                 } else {
-                    showToast('No data available at this location', 3000);
+                    showToast(t('noDataAvailable'), 3000);
                 }
             } else {
-                showToast('Error fetching pixel value', 3000);
+                showToast(t('errorFetchingValue'), 3000);
             }
         } catch (error) {
             console.error('Error querying map:', error);
-            showToast('Error fetching pixel value', 3000);
+            showToast(t('errorFetchingValue'), 3000);
         }
     };
 
@@ -328,15 +330,15 @@ const NDVIPage = () => {
 
     return (
         <DashboardLayout
-            title="Drought Monitoring"
-            breadcrumbItems={[{ name: 'Drought Indices' }]}
+            title={t('droughtMonitoring')}
+            breadcrumbItems={[{ name: t('droughtIndices') }]}
         >
             {/* Error Alert */}
             {error && (
                 <div className="col-12">
                     <div className="alert alert-danger alert-dismissible fade show" role="alert">
                         <i className="ph-duotone ph-warning me-2"></i>
-                        <strong>Error:</strong> {error}
+                        <strong>{t('error')}:</strong> {error}
                         <button
                             type="button"
                             className="btn-close"
@@ -354,7 +356,7 @@ const NDVIPage = () => {
                         <div className="d-flex justify-content-between align-items-center mb-3">
                             <h5 className="mb-0">
                                 <i className="ph-duotone ph-chart-line me-2"></i>
-                                {selectedIndex} Analysis{selectedArea ? ` - ${selectedArea}` : ' - Select Study Area'}
+                                {selectedIndex} {t('analysis')}{selectedArea ? ` - ${getProvinceName(selectedArea)}` : ` - ${t('selectStudyArea')}`}
                             </h5>
                             <div className="d-flex align-items-center gap-3">
                                 {/* Show/Hide Layer Checkbox */}
@@ -367,7 +369,7 @@ const NDVIPage = () => {
                                         onChange={(e) => setShowIndexLayer(e.target.checked)}
                                     />
                                     <label className="form-check-label" htmlFor="showIndexLayer">
-                                        Show Layer
+                                        {t('showLayer')}
                                     </label>
                                 </div>
                                 {/* Index Type Selector */}
@@ -376,7 +378,7 @@ const NDVIPage = () => {
                                         type="button"
                                         className={`btn btn-sm ${selectedIndex === 'NDVI' ? 'btn-primary' : 'btn-outline-primary'}`}
                                         onClick={() => setSelectedIndex('NDVI')}
-                                        title="Normalized Difference Vegetation Index"
+                                        title={t('ndviLong')}
                                     >
                                         <i className="ph-duotone ph-plant me-1"></i>
                                         NDVI
@@ -385,7 +387,7 @@ const NDVIPage = () => {
                                         type="button"
                                         className={`btn btn-sm ${selectedIndex === 'NDMI' ? 'btn-primary' : 'btn-outline-primary'}`}
                                         onClick={() => setSelectedIndex('NDMI')}
-                                        title="Normalized Difference Moisture Index"
+                                        title={t('ndmiLong')}
                                     >
                                         <i className="ph-duotone ph-drop me-1"></i>
                                         NDMI
@@ -394,7 +396,7 @@ const NDVIPage = () => {
                                         type="button"
                                         className={`btn btn-sm ${selectedIndex === 'SPI' ? 'btn-primary' : 'btn-outline-primary'}`}
                                         onClick={() => setSelectedIndex('SPI')}
-                                        title="Standardized Precipitation Index"
+                                        title={t('spiLong')}
                                     >
                                         <i className="ph-duotone ph-cloud-rain me-1"></i>
                                         SPI
@@ -404,22 +406,22 @@ const NDVIPage = () => {
                         </div>
                         <div className="row g-3">
                             <div className="col-md-3">
-                                <label className="form-label">Study Area</label>
+                                <label className="form-label">{t('studyArea')}</label>
                                 <select
                                     className="form-select"
                                     value={selectedArea}
                                     onChange={(e) => setSelectedArea(e.target.value)}
                                 >
-                                    <option value="">Select a study area...</option>
+                                    <option value="">{t('selectStudyArea')}</option>
                                     {studyAreas.map((area) => (
                                         <option key={area.name} value={area.name}>
-                                            {area.name}
+                                            {getProvinceName(area.name)}
                                         </option>
                                     ))}
                                 </select>
                             </div>
                             <div className="col-md-2">
-                                <label className="form-label">Start Date</label>
+                                <label className="form-label">{t('startDate')}</label>
                                 <input
                                     type="date"
                                     className="form-control"
@@ -428,7 +430,7 @@ const NDVIPage = () => {
                                 />
                             </div>
                             <div className="col-md-2">
-                                <label className="form-label">End Date</label>
+                                <label className="form-label">{t('endDate')}</label>
                                 <input
                                     type="date"
                                     className="form-control"
@@ -437,7 +439,7 @@ const NDVIPage = () => {
                                 />
                             </div>
                             <div className="col-md-3">
-                                <label className="form-label">Layer Opacity: {opacity}</label>
+                                <label className="form-label">{t('layerOpacity')}: {Math.round(opacity * 100)}%</label>
                                 <input
                                     type="range"
                                     className="form-range"
@@ -458,12 +460,12 @@ const NDVIPage = () => {
                                     {loading ? (
                                         <>
                                             <span className="spinner-border spinner-border-sm me-2"></span>
-                                            Loading...
+                                            {t('loading')}
                                         </>
                                     ) : (
                                         <>
                                             <i className="ph-duotone ph-arrows-clockwise me-2"></i>
-                                            Update
+                                            {t('update')}
                                         </>
                                     )}
                                 </button>
@@ -546,7 +548,7 @@ const NDVIPage = () => {
                                 </div>
                                 <div className="mt-2 pt-2 border-top">
                                     <small className="text-muted">
-                                        Period: {dateRange.startDate} to {dateRange.endDate}
+                                        {t('period')}: {format.dateRange(dateRange.startDate, dateRange.endDate)}
                                     </small>
                                 </div>
                             </div>
@@ -568,7 +570,7 @@ const NDVIPage = () => {
                                 <div className="card-header bg-primary text-white d-flex justify-content-between align-items-center py-2">
                                     <div>
                                         <i className="ph-duotone ph-map-pin me-2"></i>
-                                        <strong>Index Value</strong>
+                                        <strong>{t('indexValue')}</strong>
                                     </div>
                                     <button
                                         type="button"
@@ -605,13 +607,13 @@ const NDVIPage = () => {
             <div className="col-md-6">
                 <div className="card">
                     <div className="card-body">
-                        <h5 className="mb-3">{selectedIndex} Statistics</h5>
+                        <h5 className="mb-3">{selectedIndex} {t('statistics')}</h5>
                         {stats ? (
                             <>
                                 <div className="mb-3">
                                     <div className="d-flex justify-content-between align-items-center mb-2">
-                                        <span>Mean {selectedIndex}</span>
-                                        <span className="badge bg-primary fs-6">{stats.statistics.mean}</span>
+                                        <span>{t('mean')} {selectedIndex}</span>
+                                        <span className="badge bg-primary fs-6">{format.indexValue(stats.statistics.mean)}</span>
                                     </div>
                                     <div className="progress" style={{ height: '8px' }}>
                                         <div
@@ -623,34 +625,34 @@ const NDVIPage = () => {
 
                                 <ul className="list-group list-group-flush">
                                     <li className="list-group-item d-flex justify-content-between">
-                                        <span>Minimum</span>
-                                        <strong>{stats.statistics.min}</strong>
+                                        <span>{t('minimum')}</span>
+                                        <strong>{format.indexValue(stats.statistics.min)}</strong>
                                     </li>
                                     <li className="list-group-item d-flex justify-content-between">
-                                        <span>Maximum</span>
-                                        <strong>{stats.statistics.max}</strong>
+                                        <span>{t('maximum')}</span>
+                                        <strong>{format.indexValue(stats.statistics.max)}</strong>
                                     </li>
                                     <li className="list-group-item d-flex justify-content-between">
-                                        <span>Std Deviation</span>
-                                        <strong>{stats.statistics.std_dev}</strong>
+                                        <span>{t('stdDeviation')}</span>
+                                        <strong>{format.indexValue(stats.statistics.std_dev)}</strong>
                                     </li>
                                 </ul>
 
                                 <div className="alert alert-info mt-3 mb-0">
-                                    <strong>Interpretation:</strong> {stats.interpretation}
+                                    <strong>{t('interpretation')}:</strong> {stats.interpretation}
                                 </div>
                             </>
                         ) : loading ? (
                             <div className="text-center py-4">
                                 <div className="spinner-border text-primary" role="status">
-                                    <span className="visually-hidden">Loading...</span>
+                                    <span className="visually-hidden">{t('loading')}</span>
                                 </div>
-                                <p className="mt-2 text-muted">Calculating {selectedIndex} statistics...</p>
+                                <p className="mt-2 text-muted">{t('calculating')} {selectedIndex} {t('statistics')}...</p>
                             </div>
                         ) : (
                             <div className="text-center py-4 text-muted">
                                 <i className="ph-duotone ph-chart-bar" style={{ fontSize: '48px' }}></i>
-                                <p className="mt-2">No statistics available</p>
+                                <p className="mt-2">{t('noStatisticsAvailable')}</p>
                             </div>
                         )}
                     </div>
@@ -661,69 +663,66 @@ const NDVIPage = () => {
             <div className="col-md-6">
                 <div className="card">
                     <div className="card-body">
-                        <h5 className="mb-3">About {selectedIndex}</h5>
+                        <h5 className="mb-3">{t('about')} {selectedIndex}</h5>
                         {selectedIndex === 'NDVI' ? (
                             <>
                                 <p className="mb-3">
-                                    The Normalized Difference Vegetation Index (NDVI) is used to monitor vegetation health
-                                    and detect drought stress.
+                                    {t('ndviDescription')}
                                 </p>
 
-                                <h6 className="mb-2">NDVI Values:</h6>
+                                <h6 className="mb-2">{t('ndviValues')}</h6>
                                 <ul className="mb-3">
-                                    <li><strong>&lt; 0:</strong> Water or bare soil</li>
-                                    <li><strong>0 - 0.2:</strong> Very low vegetation (drought stress)</li>
-                                    <li><strong>0.2 - 0.4:</strong> Low vegetation density</li>
-                                    <li><strong>0.4 - 0.6:</strong> Moderate vegetation</li>
-                                    <li><strong>0.6 - 0.8:</strong> High vegetation density</li>
-                                    <li><strong>&gt; 0.8:</strong> Very dense vegetation</li>
+                                    <li><strong>&lt; 0:</strong> {t('ndviWater')}</li>
+                                    <li><strong>0 - 0.2:</strong> {t('ndviVeryLow')}</li>
+                                    <li><strong>0.2 - 0.4:</strong> {t('ndviLow')}</li>
+                                    <li><strong>0.4 - 0.6:</strong> {t('ndviModerate')}</li>
+                                    <li><strong>0.6 - 0.8:</strong> {t('ndviHigh')}</li>
+                                    <li><strong>&gt; 0.8:</strong> {t('ndviVeryHigh')}</li>
                                 </ul>
 
                                 <div className="alert alert-warning mb-0">
-                                    <strong>Data Source:</strong> MODIS Terra MOD13Q1 (250m, 16-day) via Google Earth Engine
+                                    <strong>{t('dataSource')}:</strong> {t('ndviDataSource')}
                                 </div>
                             </>
                         ) : selectedIndex === 'NDMI' ? (
                             <>
                                 <p className="mb-3">
-                                    The Normalized Difference Moisture Index (NDMI) measures vegetation water content
-                                    and is sensitive to vegetation moisture stress.
+                                    {t('ndmiDescription')}
                                 </p>
 
-                                <h6 className="mb-2">NDMI Values:</h6>
+                                <h6 className="mb-2">{t('ndmiValues')}</h6>
                                 <ul className="mb-3">
-                                    <li><strong>&lt; -0.4:</strong> Very dry (severe water stress)</li>
-                                    <li><strong>-0.4 to -0.2:</strong> Dry (moderate water stress)</li>
-                                    <li><strong>-0.2 to 0:</strong> Slightly dry (low water content)</li>
-                                    <li><strong>0 to 0.2:</strong> Moderate moisture (normal)</li>
-                                    <li><strong>0.2 to 0.4:</strong> High moisture (good water content)</li>
-                                    <li><strong>&gt; 0.4:</strong> Very high moisture (saturated)</li>
+                                    <li><strong>&lt; -0.4:</strong> {t('ndmiVeryDry')}</li>
+                                    <li><strong>-0.4 to -0.2:</strong> {t('ndmiDry')}</li>
+                                    <li><strong>-0.2 to 0:</strong> {t('ndmiSlightlyDry')}</li>
+                                    <li><strong>0 to 0.2:</strong> {t('ndmiModerate')}</li>
+                                    <li><strong>0.2 to 0.4:</strong> {t('ndmiHigh')}</li>
+                                    <li><strong>&gt; 0.4:</strong> {t('ndmiVeryHigh')}</li>
                                 </ul>
 
                                 <div className="alert alert-warning mb-0">
-                                    <strong>Data Source:</strong> MODIS Terra MOD09A1 (500m, 8-day) via Google Earth Engine
+                                    <strong>{t('dataSource')}:</strong> {t('ndmiDataSource')}
                                 </div>
                             </>
                         ) : (
                             <>
                                 <p className="mb-3">
-                                    The Standardized Precipitation Index (SPI) measures precipitation anomalies (10 years)
-                                    compared to historical averages to identify drought or wet conditions.
+                                    {t('spiDescription')}
                                 </p>
 
-                                <h6 className="mb-2">SPI Values:</h6>
+                                <h6 className="mb-2">{t('spiValues')}</h6>
                                 <ul className="mb-3">
-                                    <li><strong>&lt; -30%:</strong> Severe drought</li>
-                                    <li><strong>-30% to -20%:</strong> Moderate drought</li>
-                                    <li><strong>-20% to -10%:</strong> Mild drought</li>
-                                    <li><strong>-10% to +10%:</strong> Near normal</li>
-                                    <li><strong>+10% to +20%:</strong> Slightly wet</li>
-                                    <li><strong>+20% to +30%:</strong> Moderately wet</li>
-                                    <li><strong>&gt; +30%:</strong> Very wet</li>
+                                    <li><strong>&lt; -30%:</strong> {t('spiSevereDrought')}</li>
+                                    <li><strong>-30% to -20%:</strong> {t('spiModerateDrought')}</li>
+                                    <li><strong>-20% to -10%:</strong> {t('spiMildDrought')}</li>
+                                    <li><strong>-10% to +10%:</strong> {t('spiNearNormal')}</li>
+                                    <li><strong>+10% to +20%:</strong> {t('spiSlightlyWet')}</li>
+                                    <li><strong>+20% to +30%:</strong> {t('spiModeratelyWet')}</li>
+                                    <li><strong>&gt; +30%:</strong> {t('spiVeryWet')}</li>
                                 </ul>
 
                                 <div className="alert alert-warning mb-0">
-                                    <strong>Data Source:</strong> CHIRPS precipitation data via Google Earth Engine
+                                    <strong>{t('dataSource')}:</strong> {t('spiDataSource')}
                                 </div>
                             </>
                         )}

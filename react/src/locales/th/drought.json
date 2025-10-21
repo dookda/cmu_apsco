@@ -7,29 +7,25 @@
   "endDate": "วันที่สิ้นสุด",
   "dateRange": "ช่วงเวลา",
   "period": "ช่วงเวลา",
-  "layerOpacity": "ความทึบของชั้นข้อมูล",
+  "layerOpacity": "ความโปร่งใสของชั้นข้อมูล",
   "showLayer": "แสดงชั้นข้อมูล",
   "hideLayer": "ซ่อนชั้นข้อมูล",
-
   "ndvi": "NDVI",
   "ndmi": "NDMI",
   "spi": "SPI",
   "ndviLong": "ดัชนีความแตกต่างของพืชพรรณ",
   "ndmiLong": "ดัชนีความชื้นของพืชพรรณ",
   "spiLong": "ดัชนีฝนมาตรฐาน",
-
-  "ndviDescription": "ดัชนี NDVI ใช้ในการติดตามสุขภาพของพืชพรรณและตรวจจับภาวะความเครียดจากภัยแล้ง",
+  "ndviDescription": "ดัชนี NDVI ใช้ในการติดตามสุขภาพของพืชพรรณและสภาวะความเครียดจากภัยแล้ง",
   "ndmiDescription": "ดัชนี NDMI วัดปริมาณน้ำในพืชพรรณและมีความไวต่อภาวะความเครียดจากความชื้นของพืชพรรณ",
   "spiDescription": "ดัชนี SPI วัดความผิดปกติของฝน (10 ปี) เปรียบเทียบกับค่าเฉลี่ยในอดีตเพื่อระบุภาวะแล้งหรือเปียกชื้น",
-
   "ndviValues": "ค่า NDVI:",
-  "ndviWater": "น้ำหรือดินเปลือย",
+  "ndviWater": "น้ำหรือพื้นดินโล่ง",
   "ndviVeryLow": "พืชพรรณน้อยมาก (ความเครียดจากภัยแล้ง)",
   "ndviLow": "ความหนาแน่นของพืชพรรณต่ำ",
   "ndviModerate": "พืชพรรณปานกลาง",
   "ndviHigh": "ความหนาแน่นของพืชพรรณสูง",
   "ndviVeryHigh": "พืชพรรณหนาแน่นมาก",
-
   "ndmiValues": "ค่า NDMI:",
   "ndmiVeryDry": "แห้งมาก (ความเครียดจากน้ำรุนแรง)",
   "ndmiDry": "แห้ง (ความเครียดจากน้ำปานกลาง)",
@@ -37,7 +33,6 @@
   "ndmiModerate": "ความชื้นปานกลาง (ปกติ)",
   "ndmiHigh": "ความชื้นสูง (ปริมาณน้ำดี)",
   "ndmiVeryHigh": "ความชื้นสูงมาก (อิ่มตัว)",
-
   "spiValues": "ค่า SPI:",
   "spiSevereDrought": "ภัยแล้งรุนแรง",
   "spiModerateDrought": "ภัยแล้งปานกลาง",
@@ -46,11 +41,9 @@
   "spiSlightlyWet": "ชื้นเล็กน้อย",
   "spiModeratelyWet": "ชื้นปานกลาง",
   "spiVeryWet": "ชื้นมาก",
-
   "ndviDataSource": "MODIS Terra MOD13Q1 (250m, 16 วัน) ผ่าน Google Earth Engine",
   "ndmiDataSource": "MODIS Terra MOD09A1 (500m, 8 วัน) ผ่าน Google Earth Engine",
   "spiDataSource": "ข้อมูลฝน CHIRPS ผ่าน Google Earth Engine",
-
   "statistics": "สถิติ",
   "statisticalSummary": "สรุปผลทางสถิติ",
   "mean": "ค่าเฉลี่ย",
@@ -61,7 +54,6 @@
   "interpretation": "การตีความ",
   "dataSource": "แหล่งข้อมูล",
   "about": "เกี่ยวกับ",
-
   "noStatisticsAvailable": "ไม่มีข้อมูลสถิติ",
   "calculating": "กำลังคำนวณ",
   "indexValue": "ค่าดัชนี",

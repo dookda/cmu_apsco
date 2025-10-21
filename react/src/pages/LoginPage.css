@@ -1,0 +1,95 @@
+.login-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 20px;
+}
+
+.login-container {
+  width: 100%;
+  max-width: 450px;
+}
+
+.login-box {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+}
+
+.login-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 40px 30px;
+  text-align: center;
+}
+
+.login-header h1 {
+  margin: 0;
+  font-size: 32px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.login-header p {
+  margin: 0;
+  font-size: 14px;
+  opacity: 0.95;
+}
+
+.login-content {
+  padding: 40px 30px;
+  text-align: center;
+}
+
+.login-content h2 {
+  margin: 0 0 12px 0;
+  font-size: 24px;
+  font-weight: 600;
+  color: #333;
+}
+
+.login-description {
+  color: #666;
+  font-size: 14px;
+  margin-bottom: 32px;
+}
+
+.login-button-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.login-footer {
+  background: #f5f5f5;
+  padding: 20px 30px;
+  text-align: center;
+  border-top: 1px solid #e0e0e0;
+}
+
+.login-footer p {
+  margin: 0;
+  font-size: 12px;
+  color: #666;
+}
+
+@media (max-width: 768px) {
+  .login-header h1 {
+    font-size: 24px;
+  }
+
+  .login-header p {
+    font-size: 12px;
+  }
+
+  .login-content {
+    padding: 30px 20px;
+  }
+
+  .login-content h2 {
+    font-size: 20px;
+  }
+}
