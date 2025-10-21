@@ -8,7 +8,7 @@ load_dotenv()
 # Database configuration from environment variables
 DB_HOST = os.getenv("DB_HOST", "postgis")
 DB_PORT = os.getenv("DB_PORT", "5432")
-DB_NAME = os.getenv("DB_NAME", "gis")
+DB_NAME = os.getenv("DB_NAME", "cmu_apsco_db")
 DB_USER = os.getenv("DB_USER", "postgres")
 DB_PASSWORD = os.getenv("DB_PASSWORD", "postgres")
 
