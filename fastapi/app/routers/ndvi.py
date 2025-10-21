@@ -1173,21 +1173,52 @@ async def get_ndvi_stats_custom(request: dict):
 
         if not geometry:
             raise HTTPException(status_code=400, detail="Geometry is required")
+        if not start_date or not end_date:
+            raise HTTPException(status_code=400, detail="Start date and end date are required")
 
-        # Create EE geometry from GeoJSON
-        roi = ee.Geometry(geometry)
+        print(f"[NDVI Custom Stats] Processing request for {start_date} to {end_date}")
 
-        # Get MODIS NDVI
+        # Create EE geometry from GeoJSON with validation
+        try:
+            roi = ee.Geometry(geometry)
+            # Validate geometry area (not too large)
+            area_km2 = roi.area().divide(1e6).getInfo()
+            print(f"[NDVI Custom Stats] Polygon area: {area_km2:.2f} km²")
+
+            if area_km2 > 100000:  # 100,000 km²
+                raise HTTPException(
+                    status_code=400,
+                    detail=f"Polygon too large ({area_km2:.0f} km²). Maximum area is 100,000 km²."
+                )
+        except Exception as geom_error:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Invalid geometry: {str(geom_error)}"
+            )
+
+        # Get MODIS NDVI with optimized settings
         collection = (ee.ImageCollection('MODIS/061/MOD13Q1')
                       .filterBounds(roi)
                       .filterDate(start_date, end_date)
                       .select('NDVI'))
 
+        # Check if collection has data
+        count = collection.size().getInfo()
+        if count == 0:
+            raise HTTPException(
+                status_code=404,
+                detail="No MODIS data available for the specified date range and location"
+            )
+
+        print(f"[NDVI Custom Stats] Found {count} MODIS images")
+
         # Get mean composite and scale
         ndvi_composite = collection.mean().clip(roi)
         ndvi_scaled = ndvi_composite.multiply(0.0001)
 
-        # Calculate statistics
+        # Calculate statistics with optimized scale based on area
+        scale = 250 if area_km2 < 1000 else 500  # Use coarser resolution for large areas
+
         stats = ndvi_scaled.reduceRegion(
             reducer=ee.Reducer.mean().combine(
                 reducer2=ee.Reducer.minMax(),
@@ -1197,11 +1228,27 @@ async def get_ndvi_stats_custom(request: dict):
                 sharedInputs=True
             ),
             geometry=roi,
-            scale=250,  # MODIS resolution
-            maxPixels=1e9
+            scale=scale,
+            maxPixels=1e9,
+            bestEffort=True  # Allows computation to complete even with large areas
         ).getInfo()
 
         mean_val = stats.get('NDVI', 0)
+        print(f"[NDVI Custom Stats] Mean NDVI: {mean_val}")
+
+        # Generate map tiles for visualization
+        try:
+            vis_params = {
+                'min': -0.2,
+                'max': 1.0,
+                'palette': ['red', 'yellow', 'green']
+            }
+            map_id_dict = ndvi_scaled.getMapId(vis_params)
+            tile_url = map_id_dict['tile_fetcher'].url_format
+            print(f"[NDVI Custom Stats] Generated tile URL for visualization")
+        except Exception as map_error:
+            print(f"[NDVI Custom Stats] Could not generate map tiles: {map_error}")
+            tile_url = None
 
         return {
             "period": {
@@ -1214,10 +1261,19 @@ async def get_ndvi_stats_custom(request: dict):
                 "max": round(stats.get('NDVI_max', 0), 4),
                 "std_dev": round(stats.get('NDVI_stdDev', 0), 4)
             },
-            "interpretation": interpret_ndvi(mean_val)
+            "interpretation": interpret_ndvi(mean_val),
+            "area_km2": round(area_km2, 2),
+            "image_count": count,
+            "tile_url": tile_url,
+            "bounds": geometry.get('coordinates', [[]])[0] if geometry.get('type') == 'Polygon' else None
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
+        print(f"[NDVI Custom Stats] Error: {str(e)}")
+        import traceback
+        traceback.print_exc()
         raise HTTPException(
             status_code=500, detail=f"Error calculating NDVI statistics: {str(e)}")
 
@@ -1243,9 +1299,29 @@ async def get_spi_stats_custom(request: dict):
 
         if not geometry:
             raise HTTPException(status_code=400, detail="Geometry is required")
+        if not start_date or not end_date:
+            raise HTTPException(status_code=400, detail="Start date and end date are required")
 
-        # Create EE geometry from GeoJSON
-        roi = ee.Geometry(geometry)
+        print(f"[SPI Custom Stats] Processing request for {start_date} to {end_date}")
+
+        # Create EE geometry from GeoJSON with validation
+        try:
+            roi = ee.Geometry(geometry)
+            area_km2 = roi.area().divide(1e6).getInfo()
+            print(f"[SPI Custom Stats] Polygon area: {area_km2:.2f} km²")
+
+            if area_km2 > 100000:
+                raise HTTPException(
+                    status_code=400,
+                    detail=f"Polygon too large ({area_km2:.0f} km²). Maximum area is 100,000 km²."
+                )
+        except HTTPException:
+            raise
+        except Exception as geom_error:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Invalid geometry: {str(geom_error)}"
+            )
 
         # Load CHIRPS precipitation data
         chirps = ee.ImageCollection('UCSB-CHG/CHIRPS/DAILY')
@@ -1275,7 +1351,9 @@ async def get_spi_stats_custom(request: dict):
         anomaly = current_precip.subtract(historical_precip).divide(
             historical_precip).multiply(100).rename('SPI')
 
-        # Calculate statistics
+        # Calculate statistics with optimized scale
+        scale = 5000 if area_km2 < 1000 else 10000
+
         stats = anomaly.reduceRegion(
             reducer=ee.Reducer.mean().combine(
                 reducer2=ee.Reducer.minMax(),
@@ -1285,11 +1363,27 @@ async def get_spi_stats_custom(request: dict):
                 sharedInputs=True
             ),
             geometry=roi,
-            scale=5000,  # CHIRPS resolution
-            maxPixels=1e9
+            scale=scale,
+            maxPixels=1e9,
+            bestEffort=True
         ).getInfo()
 
         mean_val = stats.get('SPI', 0)
+        print(f"[SPI Custom Stats] Mean SPI: {mean_val}")
+
+        # Generate map tiles for visualization
+        try:
+            vis_params = {
+                'min': -50,
+                'max': 50,
+                'palette': ['red', 'orange', 'yellow', 'white', 'lightblue', 'blue']
+            }
+            map_id_dict = anomaly.getMapId(vis_params)
+            tile_url = map_id_dict['tile_fetcher'].url_format
+            print(f"[SPI Custom Stats] Generated tile URL for visualization")
+        except Exception as map_error:
+            print(f"[SPI Custom Stats] Could not generate map tiles: {map_error}")
+            tile_url = None
 
         return {
             "period": {
@@ -1302,10 +1396,18 @@ async def get_spi_stats_custom(request: dict):
                 "max": round(stats.get('SPI_max', 0), 2),
                 "std_dev": round(stats.get('SPI_stdDev', 0), 2)
             },
-            "interpretation": interpret_spi(mean_val)
+            "interpretation": interpret_spi(mean_val),
+            "area_km2": round(area_km2, 2),
+            "tile_url": tile_url,
+            "bounds": geometry.get('coordinates', [[]])[0] if geometry.get('type') == 'Polygon' else None
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
+        print(f"[SPI Custom Stats] Error: {str(e)}")
+        import traceback
+        traceback.print_exc()
         raise HTTPException(
             status_code=500, detail=f"Error calculating SPI statistics: {str(e)}")
 
@@ -1331,15 +1433,45 @@ async def get_ndmi_stats_custom(request: dict):
 
         if not geometry:
             raise HTTPException(status_code=400, detail="Geometry is required")
+        if not start_date or not end_date:
+            raise HTTPException(status_code=400, detail="Start date and end date are required")
 
-        # Create EE geometry from GeoJSON
-        roi = ee.Geometry(geometry)
+        print(f"[NDMI Custom Stats] Processing request for {start_date} to {end_date}")
+
+        # Create EE geometry from GeoJSON with validation
+        try:
+            roi = ee.Geometry(geometry)
+            area_km2 = roi.area().divide(1e6).getInfo()
+            print(f"[NDMI Custom Stats] Polygon area: {area_km2:.2f} km²")
+
+            if area_km2 > 100000:
+                raise HTTPException(
+                    status_code=400,
+                    detail=f"Polygon too large ({area_km2:.0f} km²). Maximum area is 100,000 km²."
+                )
+        except HTTPException:
+            raise
+        except Exception as geom_error:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Invalid geometry: {str(geom_error)}"
+            )
 
         # Load MODIS Surface Reflectance
         collection = (ee.ImageCollection('MODIS/061/MOD09A1')
                       .filterBounds(roi)
                       .filterDate(start_date, end_date)
                       .select(['sur_refl_b02', 'sur_refl_b06']))
+
+        # Check if collection has data
+        count = collection.size().getInfo()
+        if count == 0:
+            raise HTTPException(
+                status_code=404,
+                detail="No MODIS data available for the specified date range and location"
+            )
+
+        print(f"[NDMI Custom Stats] Found {count} MODIS images")
 
         # Calculate NDMI
         def calculate_ndmi(image):
@@ -1350,7 +1482,9 @@ async def get_ndmi_stats_custom(request: dict):
         ndmi_collection = collection.map(calculate_ndmi)
         ndmi_composite = ndmi_collection.mean().clip(roi)
 
-        # Calculate statistics
+        # Calculate statistics with optimized scale
+        scale = 500 if area_km2 < 1000 else 1000
+
         stats = ndmi_composite.reduceRegion(
             reducer=ee.Reducer.mean().combine(
                 reducer2=ee.Reducer.minMax(),
@@ -1360,11 +1494,27 @@ async def get_ndmi_stats_custom(request: dict):
                 sharedInputs=True
             ),
             geometry=roi,
-            scale=500,  # MODIS resolution
-            maxPixels=1e9
+            scale=scale,
+            maxPixels=1e9,
+            bestEffort=True
         ).getInfo()
 
         mean_val = stats.get('NDMI', 0)
+        print(f"[NDMI Custom Stats] Mean NDMI: {mean_val}")
+
+        # Generate map tiles for visualization
+        try:
+            vis_params = {
+                'min': -0.5,
+                'max': 0.5,
+                'palette': ['brown', 'yellow', 'lightblue', 'blue']
+            }
+            map_id_dict = ndmi_composite.getMapId(vis_params)
+            tile_url = map_id_dict['tile_fetcher'].url_format
+            print(f"[NDMI Custom Stats] Generated tile URL for visualization")
+        except Exception as map_error:
+            print(f"[NDMI Custom Stats] Could not generate map tiles: {map_error}")
+            tile_url = None
 
         return {
             "period": {
@@ -1377,10 +1527,19 @@ async def get_ndmi_stats_custom(request: dict):
                 "max": round(stats.get('NDMI_max', 0), 4),
                 "std_dev": round(stats.get('NDMI_stdDev', 0), 4)
             },
-            "interpretation": interpret_ndmi(mean_val)
+            "interpretation": interpret_ndmi(mean_val),
+            "area_km2": round(area_km2, 2),
+            "image_count": count,
+            "tile_url": tile_url,
+            "bounds": geometry.get('coordinates', [[]])[0] if geometry.get('type') == 'Polygon' else None
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
+        print(f"[NDMI Custom Stats] Error: {str(e)}")
+        import traceback
+        traceback.print_exc()
         raise HTTPException(
             status_code=500, detail=f"Error calculating NDMI statistics: {str(e)}")
 

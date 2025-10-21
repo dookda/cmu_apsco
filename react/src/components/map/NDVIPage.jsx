@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { DashboardLayout } from '../layout';
 import MapComponent from './MapComponent';
-import { Layer, Source } from 'react-map-gl/maplibre';
 
 const NDVIPage = () => {
     const [ndviData, setNdviData] = useState(null);
@@ -9,7 +8,7 @@ const NDVIPage = () => {
     const [stats, setStats] = useState(null);
     const [error, setError] = useState(null);
     const [studyAreas, setStudyAreas] = useState([]);
-    const [selectedArea, setSelectedArea] = useState('Chiang Mai');
+    const [selectedArea, setSelectedArea] = useState('');
     const [mapCenter, setMapCenter] = useState([98.95, 18.8]);
     const [mapZoom, setMapZoom] = useState(8);
     const [dateRange, setDateRange] = useState({
@@ -107,8 +106,8 @@ const NDVIPage = () => {
             }
 
             const data = await response.json();
-            console.log(`[${selectedIndex}] Map data received:`, data);
-            console.log(`[${selectedIndex}] Tile URL:`, data.tile_url);
+            // console.log(`[${selectedIndex}] Map data received:`, data);
+            // console.log(`[${selectedIndex}] Tile URL:`, data.tile_url);
             setNdviData(data);
 
             // Update map center and zoom based on study area
@@ -158,13 +157,103 @@ const NDVIPage = () => {
     }, []);
 
     // Reload data when date range, study area, or selected index changes
+    // Only load if a study area is selected
     useEffect(() => {
-        fetchIndexMapUrl();
-        fetchIndexStats();
+        if (selectedArea) {
+            fetchIndexMapUrl();
+            fetchIndexStats();
+        }
     }, [dateRange, selectedArea, selectedIndex]);
 
+    // Add GEE layer to map when data is available
+    useEffect(() => {
+        if (!mapRef.current || !ndviData || !ndviData.tile_url) return;
+
+        const map = mapRef.current;
+        const sourceId = `${selectedIndex.toLowerCase()}-gee-source`;
+        const layerId = `${selectedIndex.toLowerCase()}-gee-layer`;
+
+        // console.log('[NDVIPage] Adding GEE layer:', { sourceId, layerId, tileUrl: ndviData.tile_url });
+
+        // Remove existing source and layer if present
+        try {
+            if (map && map.getLayer && map.getLayer(layerId)) {
+                map.removeLayer(layerId);
+                console.log('[NDVIPage] Removed existing layer:', layerId);
+            }
+            if (map && map.getSource && map.getSource(sourceId)) {
+                map.removeSource(sourceId);
+                console.log('[NDVIPage] Removed existing source:', sourceId);
+            }
+        } catch (e) {
+            console.warn('[NDVIPage] Error removing old layer/source:', e);
+        }
+
+        // Add source and layer if layer should be visible
+        if (showIndexLayer) {
+            try {
+                // Add source
+                map.addSource(sourceId, {
+                    type: 'raster',
+                    tiles: [ndviData.tile_url],
+                    tileSize: 256,
+                    minzoom: 0,
+                    maxzoom: 22
+                });
+                console.log('[NDVIPage] Added source:', sourceId);
+
+                // Add layer
+                map.addLayer({
+                    id: layerId,
+                    type: 'raster',
+                    source: sourceId,
+                    paint: {
+                        'raster-opacity': opacity,
+                        'raster-fade-duration': 0
+                    },
+                    minzoom: 0,
+                    maxzoom: 22
+                });
+                console.log('[NDVIPage] Added layer:', layerId);
+            } catch (e) {
+                console.error('[NDVIPage] Error adding GEE layer:', e);
+                setError(`Failed to add ${selectedIndex} layer to map: ${e.message}`);
+            }
+        }
+
+        // Cleanup function
+        return () => {
+            try {
+                if (map.getLayer(layerId)) {
+                    map.removeLayer(layerId);
+                }
+                if (map.getSource(sourceId)) {
+                    map.removeSource(sourceId);
+                }
+            } catch (e) {
+                console.warn('[NDVIPage] Cleanup error:', e);
+            }
+        };
+    }, [ndviData, selectedIndex, showIndexLayer]);
+
+    // Update layer opacity when it changes
+    useEffect(() => {
+        if (!mapRef.current) return;
+        const map = mapRef.current;
+        const layerId = `${selectedIndex.toLowerCase()}-gee-layer`;
+
+        try {
+            if (map.getLayer(layerId)) {
+                map.setPaintProperty(layerId, 'raster-opacity', opacity);
+                console.log('[NDVIPage] Updated opacity:', opacity);
+            }
+        } catch (e) {
+            console.warn('[NDVIPage] Error updating opacity:', e);
+        }
+    }, [opacity, selectedIndex]);
+
     const handleMapLoad = (map) => {
-        console.log('[NDVIPage] Map loaded', map);
+        // console.log('[NDVIPage] Map loaded', map);
         mapRef.current = map;
 
         // Set globe projection
@@ -176,14 +265,17 @@ const NDVIPage = () => {
         map.on('click', handleMapClick);
 
         // Debug: Log when layers are added
-        map.on('sourcedata', (e) => {
-            if (e.sourceId && e.sourceId.includes('source')) {
-                console.log('[NDVIPage] Source data event:', e.sourceId, e.isSourceLoaded);
-            }
+        map.on('load', (e) => {
+            map.setProjection({
+                type: 'globe'
+            });
         });
 
         map.on('error', (e) => {
             console.error('[NDVIPage] Map error:', e);
+            if (e.error && e.error.message) {
+                setError(`Map error: ${e.error.message}`);
+            }
         });
     };
 
@@ -262,7 +354,7 @@ const NDVIPage = () => {
                         <div className="d-flex justify-content-between align-items-center mb-3">
                             <h5 className="mb-0">
                                 <i className="ph-duotone ph-chart-line me-2"></i>
-                                {selectedIndex} Analysis - {selectedArea}
+                                {selectedIndex} Analysis{selectedArea ? ` - ${selectedArea}` : ' - Select Study Area'}
                             </h5>
                             <div className="d-flex align-items-center gap-3">
                                 {/* Show/Hide Layer Checkbox */}
@@ -318,6 +410,7 @@ const NDVIPage = () => {
                                     value={selectedArea}
                                     onChange={(e) => setSelectedArea(e.target.value)}
                                 >
+                                    <option value="">Select a study area...</option>
                                     {studyAreas.map((area) => (
                                         <option key={area.name} value={area.name}>
                                             {area.name}
@@ -502,31 +595,7 @@ const NDVIPage = () => {
                             onMapLoad={handleMapLoad}
                             projection="globe"
                         >
-                            {/* Add index raster layer when data is available and layer is visible */}
-                            {showIndexLayer && ndviData && ndviData.tile_url && (() => {
-                                console.log(`[NDVIPage] Rendering ${selectedIndex} layer with opacity ${opacity}`);
-                                console.log(`[NDVIPage] Tile URL:`, ndviData.tile_url);
-                                return (
-                                    <Source
-                                        id={`${selectedIndex.toLowerCase()}-source`}
-                                        type="raster"
-                                        tiles={[ndviData.tile_url]}
-                                        tileSize={256}
-                                        key={`${selectedIndex}-${dateRange.startDate}-${dateRange.endDate}-${selectedArea}`}
-                                    >
-                                        <Layer
-                                            id={`${selectedIndex.toLowerCase()}-layer`}
-                                            type="raster"
-                                            paint={{
-                                                'raster-opacity': opacity,
-                                                'raster-fade-duration': 0
-                                            }}
-                                            minzoom={0}
-                                            maxzoom={22}
-                                        />
-                                    </Source>
-                                );
-                            })()}
+                            {/* GEE layers are now added programmatically via useEffect */}
                         </MapComponent>
                     </div>
                 </div>

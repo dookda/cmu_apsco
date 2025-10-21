@@ -1,10 +1,15 @@
 /* Global styles for CMU APSCO application */
 /* Note: Main theme styles are loaded from /assets/css/style.css */
 
+/* Import Noto Sans Thai font from Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600;700&display=swap');
+
 /* Remove default React styles that might conflict with theme */
 body {
   margin: 0;
-  /* Let the theme handle font-family */
+  font-family: 'Noto Sans Thai', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }

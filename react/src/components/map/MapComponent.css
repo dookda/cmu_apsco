@@ -9,8 +9,9 @@
 /* Map Controls Styling */
 .maplibregl-ctrl-group {
     background: white;
-    border-radius: 4px;
+    border-radius: 0.25rem !important;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    overflow: hidden;
 }
 
 .maplibregl-ctrl-group button {
@@ -20,6 +21,17 @@
 
 .maplibregl-ctrl-group button:hover {
     background-color: #f0f0f0;
+}
+
+/* Round corners for first and last buttons in control group */
+.maplibregl-ctrl-group button:first-child {
+    border-top-left-radius: 0.25rem;
+    border-top-right-radius: 0.25rem;
+}
+
+.maplibregl-ctrl-group button:last-child {
+    border-bottom-left-radius: 0.25rem;
+    border-bottom-right-radius: 0.25rem;
 }
 
 /* Attribution */
@@ -114,56 +126,85 @@
     border-top-color: #1e2128;
 }
 
-/* MapboxDraw Control Styling to match MapLibre controls */
-.mapbox-gl-draw_ctrl-draw-btn {
-    background: white;
-    border: none;
-    width: 29px;
-    height: 29px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: background-color 0.2s;
+/* Add margin between geolocation control and drawing tool */
+.maplibregl-ctrl-top-right .maplibregl-ctrl-group {
+    margin-bottom: 10px;
 }
 
-.mapbox-gl-draw_ctrl-draw-btn:hover {
-    background-color: #f0f0f0;
+/* Custom drawing controls - full visibility and proper styling */
+.custom-drawing-controls {
+    position: absolute !important;
+    bottom: 50px !important;
+    right: 10px !important;
+    z-index: 9999 !important;
+    pointer-events: auto !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 5px !important;
 }
 
-.mapbox-gl-draw_ctrl-draw-btn.active {
-    background-color: #e0e0e0;
+.custom-drawing-controls button {
+    background: white !important;
+    border: 1px solid #dee2e6 !important;
+    cursor: pointer !important;
+    width: 40px !important;
+    height: 40px !important;
+    border-radius: 0.25rem !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    transition: all 0.2s ease !important;
 }
 
-.mapboxgl-ctrl-group.mapboxgl-ctrl,
-.mapbox-gl-draw_ctrl-draw-btn {
-    background: white;
-    border-radius: 4px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+.custom-drawing-controls button:hover {
+    transform: scale(1.05);
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3) !important;
 }
 
-/* Dark theme support for MapboxDraw */
-[data-pc-theme="dark"] .mapbox-gl-draw_ctrl-draw-btn {
-    background: #1e2128;
-    color: #e5e7eb;
+.custom-drawing-controls button.btn-success {
+    background-color: #198754 !important;
+    border-color: #198754 !important;
+    color: white !important;
 }
 
-[data-pc-theme="dark"] .mapbox-gl-draw_ctrl-draw-btn:hover {
-    background-color: #2d3139;
+.custom-drawing-controls button.btn-outline-danger {
+    color: #dc3545 !important;
+    border-color: #dc3545 !important;
 }
 
-[data-pc-theme="dark"] .mapbox-gl-draw_ctrl-draw-btn.active {
-    background-color: #3d414a;
+.custom-drawing-controls button.btn-outline-danger:hover {
+    background-color: #dc3545 !important;
+    color: white !important;
 }
 
-[data-pc-theme="dark"] .mapboxgl-ctrl-group.mapboxgl-ctrl {
-    background: #1e2128;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+/* Dark theme support for custom drawing controls */
+[data-pc-theme="dark"] .custom-drawing-controls button {
+    background: #1e2128 !important;
+    border-color: #404956 !important;
+    color: #e5e7eb !important;
 }
 
-[data-pc-theme="dark"] .mapbox-gl-draw_polygon,
-[data-pc-theme="dark"] .mapbox-gl-draw_trash {
-    filter: invert(1) brightness(0.9);
+[data-pc-theme="dark"] .custom-drawing-controls button:hover {
+    background: #2d3139 !important;
+    border-color: #4f5864 !important;
+}
+
+[data-pc-theme="dark"] .custom-drawing-controls button.btn-success {
+    background-color: #198754 !important;
+    border-color: #198754 !important;
+    color: white !important;
+}
+
+[data-pc-theme="dark"] .custom-drawing-controls button.btn-outline-danger {
+    color: #f87171 !important;
+    border-color: #dc3545 !important;
+}
+
+[data-pc-theme="dark"] .custom-drawing-controls button.btn-outline-danger:hover {
+    background-color: #dc3545 !important;
+    border-color: #dc3545 !important;
+    color: white !important;
 }
 
 /* Responsive */
