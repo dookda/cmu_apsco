@@ -1,0 +1,81 @@
+{
+  "surveyForm": "แบบสำรวจ",
+  "surveyTitle": "แบบสำรวจผลกระทบจากภัยแล้ง",
+  "surveyDescription": "การสำรวจภาคสนามสำหรับติดตามและประเมินภัยแล้ง",
+
+  "selectDroughtIndex": "เลือกดัชนีภัยแล้ง",
+  "drawPolygon": "วาดรูปหลายเหลี่ยม",
+  "drawNewPolygon": "วาดรูปหลายเหลี่ยมใหม่",
+  "finishDrawing": "เสร็จสิ้นการวาด",
+  "clearPolygon": "ล้างรูปหลายเหลี่ยม",
+  "clickToCalculate": "คลิกเพื่อคำนวณ {index} สำหรับรูปหลายเหลี่ยมที่วาด",
+  "calculateIndex": "คำนวณ {index}",
+  "calculatingIndex": "กำลังคำนวณ {index}...",
+
+  "parcelInformation": "ข้อมูลแปลง",
+  "parcelName": "ชื่อแปลง",
+  "parcelNamePlaceholder": "กรอกชื่อแปลง",
+  "description": "คำอธิบาย",
+  "descriptionPlaceholder": "กรอกคำอธิบาย",
+  "surveyorName": "ชื่อผู้สำรวจ",
+  "surveyorNamePlaceholder": "กรอกชื่อผู้สำรวจ",
+
+  "locationDetails": "รายละเอียดที่ตั้ง",
+  "province": "จังหวัด",
+  "selectProvince": "เลือกจังหวัด...",
+  "landUse": "การใช้ที่ดิน",
+  "selectLandUse": "เลือกการใช้ที่ดิน...",
+  "cropType": "ชนิดพืช",
+  "selectCropType": "เลือกชนิดพืช...",
+  "notes": "หมายเหตุ",
+  "notesPlaceholder": "หมายเหตุเพิ่มเติม...",
+
+  "landUseTypes": {
+    "agriculture": "เกษตรกรรม",
+    "forest": "ป่าไม้",
+    "urban": "เมือง",
+    "water": "แหล่งน้ำ",
+    "grassland": "ทุ่งหญ้า",
+    "bareland": "ที่ดินเปล่า",
+    "other": "อื่นๆ"
+  },
+
+  "cropTypes": {
+    "rice": "ข้าว",
+    "corn": "ข้าวโพด",
+    "sugarcane": "อ้อย",
+    "cassava": "มันสำปะหลัง",
+    "vegetables": "ผัก",
+    "fruits": "ผลไม้",
+    "rubber": "ยางพารา",
+    "other": "อื่นๆ"
+  },
+
+  "layerControl": "ชั้นข้อมูล {index}",
+  "opacity": "ความทึบ",
+  "drawInstructions": "คลิกบนแผนที่เพื่อเพิ่มจุด คลิกปุ่ม 'เสร็จสิ้น' เมื่อเสร็จแล้ว",
+  "polygonPoints": "{count} จุด",
+
+  "saveParcel": "บันทึกแปลง",
+  "saving": "กำลังบันทึก...",
+  "clearForm": "ล้างฟอร์ม",
+
+  "errors": {
+    "noPolygon": "กรุณาวาดรูปหลายเหลี่ยมบนแผนที่ก่อน",
+    "noParcelName": "กรุณากรอกชื่อแปลง",
+    "calculationError": "เกิดข้อผิดพลาดในการคำนวณ {index} กรุณาลองใหม่อีกครั้ง",
+    "saveError": "ไม่สามารถบันทึกแปลงได้"
+  },
+
+  "success": {
+    "parcelSaved": "บันทึกแปลงสำรวจสำเร็จ"
+  },
+
+  "basemaps": {
+    "light": "สว่าง",
+    "dark": "มืด",
+    "voyager": "วอยเอเจอร์",
+    "streets": "ถนน",
+    "satellite": "ดาวเทียม"
+  }
+}

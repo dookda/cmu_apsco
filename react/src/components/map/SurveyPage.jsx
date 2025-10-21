@@ -5,7 +5,7 @@ import usePolygonDrawing from '../../hooks/usePolygonDrawing';
 import { useLanguage } from '../../contexts/LanguageContext';
 
 const SurveyPage = () => {
-    const { t } = useLanguage();
+    const { t, format } = useLanguage();
     const [mapCenter, setMapCenter] = useState([100.5, 15.87]);
     const [mapZoom, setMapZoom] = useState(6);
     const [basemap, setBasemap] = useState('satellite');
@@ -52,27 +52,27 @@ const SurveyPage = () => {
 
     const basemapOptions = {
         positron: {
-            name: 'Light',
+            name: t('basemaps.light'),
             url: 'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json',
             icon: 'ph-sun'
         },
         'dark-matter': {
-            name: 'Dark',
+            name: t('basemaps.dark'),
             url: 'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json',
             icon: 'ph-moon'
         },
         voyager: {
-            name: 'Voyager',
+            name: t('basemaps.voyager'),
             url: 'https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json',
             icon: 'ph-map-trifold'
         },
         osm: {
-            name: 'Streets',
+            name: t('basemaps.streets'),
             url: 'https://tiles.openfreemap.org/styles/liberty',
             icon: 'ph-road-horizon'
         },
         satellite: {
-            name: 'Satellite',
+            name: t('basemaps.satellite'),
             url: {
                 version: 8,
                 sources: {
@@ -198,7 +198,7 @@ const SurveyPage = () => {
 
     const calculateIndexForPolygon = async () => {
         if (!drawnPolygon) {
-            setError('Please draw a polygon on the map first');
+            setError(t('errors.noPolygon'));
             return;
         }
 
@@ -233,7 +233,7 @@ const SurveyPage = () => {
 
             if (!response.ok) {
                 const errorData = await response.json().catch(() => ({ detail: response.statusText }));
-                throw new Error(errorData.detail || `Failed to calculate ${selectedIndex}`);
+                throw new Error(errorData.detail || t('errors.calculationError', { index: selectedIndex }));
             }
 
             const data = await response.json();
@@ -251,20 +251,20 @@ const SurveyPage = () => {
             }
         } catch (error) {
             console.error(`[SurveyPage] Error calculating ${selectedIndex}:`, error);
-            setError(error.message || `Error calculating ${selectedIndex}. Please try again.`);
+            setError(error.message || t('errors.calculationError', { index: selectedIndex }));
         } finally {
             setLoading(false);
         }
     };
 
     const handleSaveParcel = async () => {
-        if (!drawnPolygon) { alert('Please draw a polygon on the map first'); return; }
-        if (!parcelName.trim()) { alert('Please enter a parcel name'); return; }
+        if (!drawnPolygon) { alert(t('errors.noPolygon')); return; }
+        if (!parcelName.trim()) { alert(t('errors.noParcelName')); return; }
         setLoading(true); setSaveSuccess(false); setError(null);
         try {
             const parcelData = { parcel_name: parcelName, description, geometry: drawnPolygon, surveyor_name: surveyorName, selected_index: selectedIndex, index_date_start: dateRange.startDate, index_date_end: dateRange.endDate, index_mean: stats?.statistics?.mean || null, index_min: stats?.statistics?.min || null, index_max: stats?.statistics?.max || null, index_std_dev: stats?.statistics?.std_dev || null, interpretation: stats?.interpretation || null, province, land_use: landUse, crop_type: cropType, notes };
             const response = await fetch('http://localhost:8000/api/survey/parcels', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(parcelData) });
-            if (!response.ok) { const errorData = await response.json(); throw new Error(errorData.detail || 'Failed to save parcel'); }
+            if (!response.ok) { const errorData = await response.json(); throw new Error(errorData.detail || t('errors.saveError')); }
             const result = await response.json(); console.log('Parcel saved:', result); setSaveSuccess(true); setTimeout(() => { handleClearForm(); setSaveSuccess(false); }, 3000);
         } catch (error) { console.error('Error saving parcel:', error); setError(error.message); } finally { setLoading(false); }
     };
@@ -285,7 +285,7 @@ const SurveyPage = () => {
     };
 
     return (
-        <DashboardLayout title="Survey Form" breadcrumbItems={[{ name: 'Survey Form' }]}>
+        <DashboardLayout title={t('surveyForm')} breadcrumbItems={[{ name: t('surveyForm') }]}>
             <div className="row g-3">
                 <div className="col-lg-7">
                     <div className="card">
@@ -342,7 +342,7 @@ const SurveyPage = () => {
                                             console.log('Draw button clicked');
                                             startDrawing();
                                         }}
-                                        title="Draw new polygon"
+                                        title={t('drawNewPolygon')}
                                         style={{
                                             width: '40px',
                                             height: '40px',
@@ -366,7 +366,7 @@ const SurveyPage = () => {
                                             console.log('Finish button clicked');
                                             finishDrawing();
                                         }}
-                                        title="Finish drawing"
+                                        title={t('finishDrawing')}
                                         style={{
                                             width: '40px',
                                             height: '40px',
@@ -390,7 +390,7 @@ const SurveyPage = () => {
                                             console.log('Clear button clicked');
                                             handleClearPolygon();
                                         }}
-                                        title="Clear polygon"
+                                        title={t('clearPolygon')}
                                         style={{
                                             width: '40px',
                                             height: '40px',
@@ -415,45 +415,45 @@ const SurveyPage = () => {
                         <div className="card mt-3">
                             <div className="card-body">
                                 <div className="mb-3">
-                                    <h6 className="text-muted mb-2">Period</h6>
+                                    <h6 className="text-muted mb-2">{t('period')}</h6>
                                     <p className="mb-0">
                                         <i className="ph-duotone ph-calendar me-2"></i>
-                                        {stats.period?.start_date} to {stats.period?.end_date}
+                                        {format.dateRange(stats.period?.start_date, stats.period?.end_date)}
                                     </p>
                                 </div>
 
                                 <hr />
 
-                                <h6 className="mb-3">Statistical Summary</h6>
+                                <h6 className="mb-3">{t('statisticalSummary')}</h6>
                                 <ul className="list-group list-group-flush mb-3">
                                     <li className="list-group-item d-flex justify-content-between align-items-center px-0">
-                                        <span><strong>Area</strong></span>
+                                        <span><strong>{t('area')}</strong></span>
                                         <span className="badge bg-info rounded-pill fs-6">
-                                            {stats.area_km2 !== undefined ? `${Number(stats.area_km2).toFixed(2)} km²` : 'N/A'}
+                                            {stats.area_km2 !== undefined ? format.area(stats.area_km2) : 'N/A'}
                                         </span>
                                     </li>
                                     <li className="list-group-item d-flex justify-content-between align-items-center px-0">
-                                        <span><strong>Mean {selectedIndex}</strong></span>
+                                        <span><strong>{t('mean')} {selectedIndex}</strong></span>
                                         <span className="badge bg-primary rounded-pill fs-6">
-                                            {stats.statistics?.mean !== undefined ? Number(stats.statistics.mean).toFixed(4) : 'N/A'}
+                                            {stats.statistics?.mean !== undefined ? format.indexValue(stats.statistics.mean) : 'N/A'}
                                         </span>
                                     </li>
                                     <li className="list-group-item d-flex justify-content-between align-items-center px-0">
-                                        <span>Minimum</span>
+                                        <span>{t('minimum')}</span>
                                         <span className="badge bg-secondary rounded-pill">
-                                            {stats.statistics?.min !== undefined ? Number(stats.statistics.min).toFixed(4) : 'N/A'}
+                                            {stats.statistics?.min !== undefined ? format.indexValue(stats.statistics.min) : 'N/A'}
                                         </span>
                                     </li>
                                     <li className="list-group-item d-flex justify-content-between align-items-center px-0">
-                                        <span>Maximum</span>
+                                        <span>{t('maximum')}</span>
                                         <span className="badge bg-secondary rounded-pill">
-                                            {stats.statistics?.max !== undefined ? Number(stats.statistics.max).toFixed(4) : 'N/A'}
+                                            {stats.statistics?.max !== undefined ? format.indexValue(stats.statistics.max) : 'N/A'}
                                         </span>
                                     </li>
                                     <li className="list-group-item d-flex justify-content-between align-items-center px-0">
-                                        <span>Standard Deviation</span>
+                                        <span>{t('stdDeviation')}</span>
                                         <span className="badge bg-secondary rounded-pill">
-                                            {stats.statistics?.std_dev !== undefined ? Number(stats.statistics.std_dev).toFixed(4) : 'N/A'}
+                                            {stats.statistics?.std_dev !== undefined ? format.indexValue(stats.statistics.std_dev) : 'N/A'}
                                         </span>
                                     </li>
                                 </ul>
@@ -461,7 +461,7 @@ const SurveyPage = () => {
                                 <div className="alert alert-info mb-0">
                                     <h6 className="alert-heading">
                                         <i className="ph-duotone ph-info me-2"></i>
-                                        Interpretation
+                                        {t('interpretation')}
                                     </h6>
                                     <p className="mb-0">{stats.interpretation}</p>
                                 </div>
@@ -477,7 +477,7 @@ const SurveyPage = () => {
                             {error && (
                                 <div className="alert alert-danger alert-dismissible fade show" role="alert">
                                     <i className="ph-duotone ph-warning me-2"></i>
-                                    <strong>Error:</strong> {error}
+                                    <strong>{t('error')}:</strong> {error}
                                     <button type="button" className="btn-close" onClick={() => setError(null)}></button>
                                 </div>
                             )}
@@ -486,13 +486,13 @@ const SurveyPage = () => {
                             {saveSuccess && (
                                 <div className="alert alert-success alert-dismissible fade show" role="alert">
                                     <i className="ph-duotone ph-check-circle me-2"></i>
-                                    <strong>Success!</strong> Survey parcel saved successfully.
+                                    <strong>{t('success')}!</strong> {t('success.parcelSaved')}
                                     <button type="button" className="btn-close" onClick={() => setSaveSuccess(false)}></button>
                                 </div>
                             )}
 
                             <div className="mb-3">
-                                <label className="form-label">Select Drought Index</label>
+                                <label className="form-label">{t('selectDroughtIndex')}</label>
                                 <div className="btn-group w-100" role="group">
                                     <button type="button" className={`btn ${selectedIndex === 'NDVI' ? 'btn-primary' : 'btn-outline-primary'}`} onClick={() => setSelectedIndex('NDVI')}>NDVI</button>
                                     <button type="button" className={`btn ${selectedIndex === 'NDMI' ? 'btn-primary' : 'btn-outline-primary'}`} onClick={() => setSelectedIndex('NDMI')}>NDMI</button>
@@ -502,7 +502,7 @@ const SurveyPage = () => {
 
                             <div className="row mb-3">
                                 <div className="col-6">
-                                    <label className="form-label">Start Date</label>
+                                    <label className="form-label">{t('startDate')}</label>
                                     <input
                                         type="date"
                                         className="form-control"
@@ -511,7 +511,7 @@ const SurveyPage = () => {
                                     />
                                 </div>
                                 <div className="col-6">
-                                    <label className="form-label">End Date</label>
+                                    <label className="form-label">{t('endDate')}</label>
                                     <input
                                         type="date"
                                         className="form-control"
@@ -525,7 +525,7 @@ const SurveyPage = () => {
                             {customPolygonLayer && (
                                 <div className="mb-3">
                                     <div className="d-flex justify-content-between align-items-center mb-2">
-                                        <label className="form-label mb-0">{selectedIndex} Layer</label>
+                                        <label className="form-label mb-0">{t('layerControl', { index: selectedIndex })}</label>
                                         <div className="form-check form-switch">
                                             <input
                                                 className="form-check-input"
@@ -535,12 +535,12 @@ const SurveyPage = () => {
                                                 onChange={(e) => setShowCustomLayer(e.target.checked)}
                                             />
                                             <label className="form-check-label" htmlFor="showCustomLayer">
-                                                {showCustomLayer ? 'Visible' : 'Hidden'}
+                                                {showCustomLayer ? t('visible') : t('hidden')}
                                             </label>
                                         </div>
                                     </div>
                                     <div>
-                                        <label className="form-label small">Opacity: {Math.round(layerOpacity * 100)}%</label>
+                                        <label className="form-label small">{t('opacity')}: {Math.round(layerOpacity * 100)}%</label>
                                         <input
                                             type="range"
                                             className="form-range"
@@ -565,18 +565,18 @@ const SurveyPage = () => {
                                     {loading ? (
                                         <>
                                             <span className="spinner-border spinner-border-sm me-2"></span>
-                                            Calculating {selectedIndex}...
+                                            {t('calculatingIndex', { index: selectedIndex })}
                                         </>
                                     ) : (
                                         <>
                                             <i className="ph-duotone ph-chart-line me-2"></i>
-                                            Calculate {selectedIndex}
+                                            {t('calculateIndex', { index: selectedIndex })}
                                         </>
                                     )}
                                 </button>
                                 {drawnPolygon && !stats && !loading && (
                                     <small className="text-muted d-block mt-1">
-                                        Click to calculate {selectedIndex} for the drawn polygon
+                                        {t('clickToCalculate', { index: selectedIndex })}
                                     </small>
                                 )}
                             </div>
@@ -584,13 +584,13 @@ const SurveyPage = () => {
                             <hr />
 
                             <div className="mb-3">
-                                <label className="form-label">Parcel Name</label>
+                                <label className="form-label">{t('parcelName')}</label>
                                 <input
                                     type="text"
                                     className="form-control"
                                     value={parcelName}
                                     onChange={(e) => setParcelName(e.target.value)}
-                                    placeholder="Enter parcel name"
+                                    placeholder={t('parcelNamePlaceholder')}
                                 />
                             </div>
 
@@ -600,14 +600,14 @@ const SurveyPage = () => {
                                     onClick={handleSaveParcel}
                                     disabled={loading || !drawnPolygon || !parcelName.trim()}
                                 >
-                                    {loading ? 'Saving...' : 'Save Survey Parcel'}
+                                    {loading ? t('saving') : t('saveParcel')}
                                 </button>
                                 <button
                                     className="btn btn-outline-secondary"
                                     onClick={handleClearForm}
                                     disabled={loading}
                                 >
-                                    Clear Form
+                                    {t('clearForm')}
                                 </button>
                             </div>
                         </div>

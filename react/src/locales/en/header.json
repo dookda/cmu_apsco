@@ -1,0 +1,15 @@
+{
+  "myAccount": "My Account",
+  "settings": "Settings",
+  "support": "Support",
+  "lockScreen": "Lock Screen",
+  "logout": "Logout",
+  "dark": "Dark",
+  "light": "Light",
+  "default": "Default",
+  "systemStatusUpdate": "System Status Update",
+  "databaseConnection": "Database Connection",
+  "newDataAvailable": "New Data Available",
+  "switchToThai": "Switch to Thai",
+  "switchToEnglish": "Switch to English"
+}

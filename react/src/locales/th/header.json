@@ -1,0 +1,15 @@
+{
+  "myAccount": "บัญชีของฉัน",
+  "settings": "การตั้งค่า",
+  "support": "ฝ่ายสนับสนุน",
+  "lockScreen": "ล็อคหน้าจอ",
+  "logout": "ออกจากระบบ",
+  "dark": "มืด",
+  "light": "สว่าง",
+  "default": "ค่าเริ่มต้น",
+  "systemStatusUpdate": "อัปเดตสถานะระบบ",
+  "databaseConnection": "การเชื่อมต่อฐานข้อมูล",
+  "newDataAvailable": "มีข้อมูลใหม่",
+  "switchToThai": "เปลี่ยนเป็นภาษาไทย",
+  "switchToEnglish": "Switch to English"
+}

@@ -1,0 +1,81 @@
+{
+  "surveyForm": "Survey Form",
+  "surveyTitle": "Drought Impact Survey",
+  "surveyDescription": "Field survey for drought monitoring and assessment",
+
+  "selectDroughtIndex": "Select Drought Index",
+  "drawPolygon": "Draw Polygon",
+  "drawNewPolygon": "Draw new polygon",
+  "finishDrawing": "Finish drawing",
+  "clearPolygon": "Clear polygon",
+  "clickToCalculate": "Click to calculate {index} for the drawn polygon",
+  "calculateIndex": "Calculate {index}",
+  "calculatingIndex": "Calculating {index}...",
+
+  "parcelInformation": "Parcel Information",
+  "parcelName": "Parcel Name",
+  "parcelNamePlaceholder": "Enter parcel name",
+  "description": "Description",
+  "descriptionPlaceholder": "Enter description",
+  "surveyorName": "Surveyor Name",
+  "surveyorNamePlaceholder": "Enter surveyor name",
+
+  "locationDetails": "Location Details",
+  "province": "Province",
+  "selectProvince": "Select province...",
+  "landUse": "Land Use",
+  "selectLandUse": "Select land use...",
+  "cropType": "Crop Type",
+  "selectCropType": "Select crop type...",
+  "notes": "Notes",
+  "notesPlaceholder": "Additional notes...",
+
+  "landUseTypes": {
+    "agriculture": "Agriculture",
+    "forest": "Forest",
+    "urban": "Urban",
+    "water": "Water",
+    "grassland": "Grassland",
+    "bareland": "Bare Land",
+    "other": "Other"
+  },
+
+  "cropTypes": {
+    "rice": "Rice",
+    "corn": "Corn",
+    "sugarcane": "Sugarcane",
+    "cassava": "Cassava",
+    "vegetables": "Vegetables",
+    "fruits": "Fruits",
+    "rubber": "Rubber",
+    "other": "Other"
+  },
+
+  "layerControl": "{index} Layer",
+  "opacity": "Opacity",
+  "drawInstructions": "Click on the map to add points. Click 'Finish' button when done.",
+  "polygonPoints": "{count} points",
+
+  "saveParcel": "Save Parcel",
+  "saving": "Saving...",
+  "clearForm": "Clear Form",
+
+  "errors": {
+    "noPolygon": "Please draw a polygon on the map first",
+    "noParcelName": "Please enter a parcel name",
+    "calculationError": "Error calculating {index}. Please try again.",
+    "saveError": "Failed to save parcel"
+  },
+
+  "success": {
+    "parcelSaved": "Survey parcel saved successfully."
+  },
+
+  "basemaps": {
+    "light": "Light",
+    "dark": "Dark",
+    "voyager": "Voyager",
+    "streets": "Streets",
+    "satellite": "Satellite"
+  }
+}
